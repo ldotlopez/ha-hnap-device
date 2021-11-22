@@ -1,0 +1,13 @@
+default_config:
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+logger:
+  default: warning
+  logs:
+    dchs220: debug
+    custom_components.dlink_siren: debug
+    homeassistant.components.siren: debug
