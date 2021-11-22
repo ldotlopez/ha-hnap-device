@@ -42,11 +42,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN] = {}
 
     # Store an API object for your platforms to access
-    hass.data[DOMAIN][entry.entry_id] = dchs220.Siren(
+    api = dchs220.Siren(
         hostname=entry.data["host"],
         pin=entry.data["password"],
         username=entry.data["username"],
     )
+    await hass.async_add_executor_job(api.login)
+
+    hass.data[DOMAIN][entry.entry_id] = api
 
     # Setup platforms
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)

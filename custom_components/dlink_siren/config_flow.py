@@ -68,7 +68,7 @@ async def validate_input(
     except requests.exceptions.ConnectionError as e:
         raise CannotConnect() from e
 
-    except dchs220.ClientError as e:
+    except dchs220.AuthenticationError as e:
         raise InvalidAuth() from e
 
     # Return info that you want to store in the config entry.
