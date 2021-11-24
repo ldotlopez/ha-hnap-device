@@ -118,5 +118,6 @@ async def async_setup_entry(
                 api=hass.data[DOMAIN][config_entry.entry_id],
                 unique_id=config_entry.entry_id,
             )
-        ]
+        ],
+        update_before_add=True,
     )

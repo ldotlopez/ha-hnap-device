@@ -1,5 +1,6 @@
 {
   "name": "D-Link Siren (D-220)",
   "render_readme": true,
-  "domains": ["siren"]
+  "domains": ["siren"],
+  "content_in_root": false
 }
