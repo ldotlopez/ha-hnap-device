@@ -5,7 +5,7 @@
   "documentation": "https://github.com/ldotlopez/ha-dlink-siren",
   "issue_tracker": "https://github.com/ldotlopez/ha-dlink-siren/issues",
   "requirements": [
-    "dchs220==0.0.2"
+    "hnap==0.0.3"
   ],
   "ssdp": [],
   "zeroconf": [],

@@ -33,7 +33,7 @@ from homeassistant.exceptions import HomeAssistantError
 
 from .const import DOMAIN, DEFAULT_NAME
 
-import dchs220
+import hnap
 import requests
 
 
@@ -58,7 +58,7 @@ async def validate_input(
     user.
     """
 
-    siren = dchs220.Siren(
+    siren = hnap.Siren(
         hostname=data["host"], pin=data["password"], username=data["username"]
     )
 
@@ -68,7 +68,7 @@ async def validate_input(
     except requests.exceptions.ConnectionError as e:
         raise CannotConnect() from e
 
-    except dchs220.AuthenticationError as e:
+    except hnap.AuthenticationError as e:
         raise InvalidAuth() from e
 
     # Return info that you want to store in the config entry.

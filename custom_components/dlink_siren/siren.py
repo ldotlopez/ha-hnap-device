@@ -20,7 +20,7 @@
 
 from typing import Optional
 
-import dchs220
+import hnap
 from homeassistant.components.siren import (
     SUPPORT_DURATION,
     SUPPORT_TONES,
@@ -62,7 +62,7 @@ class DLinkSiren(SirenEntity):
             | SUPPORT_VOLUME_SET
         )
         self._attr_available_tones = {
-            x.name.lower().replace("_", "-"): x.value for x in dchs220.Sound
+            x.name.lower().replace("_", "-"): x.value for x in hnap.Sound
         }
 
         # dlink_siren.Siren
@@ -74,7 +74,7 @@ class DLinkSiren(SirenEntity):
     def turn_on(self, volume_level=0.5, duration=5, tone="beep") -> None:
         _LOGGER.debug("Turning siren ON")
         self._api.play(
-            sound=dchs220.Sound.fromstring(tone),
+            sound=hnap.Sound.fromstring(tone),
             volume=int(volume_level * 100),
             duration=duration,
         )

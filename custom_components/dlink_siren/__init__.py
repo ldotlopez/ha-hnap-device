@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import logging
 
-import dchs220
+import hnap
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
@@ -42,7 +42,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN] = {}
 
     # Store an API object for your platforms to access
-    api = dchs220.Siren(
+    api = hnap.Siren(
         hostname=entry.data["host"],
         pin=entry.data["password"],
         username=entry.data["username"],
