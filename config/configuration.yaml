@@ -8,6 +8,6 @@ scene: !include scenes.yaml
 logger:
   default: warning
   logs:
-    dchs220: debug
+    hnap: debug
     custom_components.dlink_siren: debug
     homeassistant.components.siren: debug
