@@ -4,9 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-homeassistant = "*"
 
 [dev-packages]
+homeassistant = "*"
 
 [requires]
 python_version = "3"
