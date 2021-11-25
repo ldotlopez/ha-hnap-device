@@ -71,8 +71,7 @@ class DLinkSiren(SirenEntity):
     def update(self):
         self._attr_is_on = self._api.is_playing()
 
-    def turn_on(self, volume_level=0.5, duration=5, tone="beep") -> None:
-        _LOGGER.debug("Turning siren ON")
+    def turn_on(self, volume_level=1, duration=15, tone="police") -> None:
         self._api.play(
             sound=hnap.Sound.fromstring(tone),
             volume=int(volume_level * 100),
@@ -80,7 +79,6 @@ class DLinkSiren(SirenEntity):
         )
 
     def turn_off(self) -> None:
-        _LOGGER.debug("Turning siren OFF")
         self._api.stop()
 
 
