@@ -43,9 +43,8 @@ from .const import (
     CONF_PLATFORMS,
     DOMAIN,
     PLATFORM_CAMERA,
-    PLATFORM_MOTION,
+    PLATFORM_BINARY_SENSOR,
     PLATFORM_SIREN,
-    PLATFORMS,
 )
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
@@ -86,12 +85,13 @@ async def validate_input(
     # if isinstance(device, hnap.Camera):
     #     # 'Optical Recognition', 'Environmental Sensor', 'Camera']
     #     platforms.append(PLATFORM_CAMERA)
-    # if isinstance(device, hnap.Motion):
-    #     platforms.append(PLATFORM_MOTION)
+    if isinstance(device, hnap.Motion):
+        platforms.append(PLATFORM_BINARY_SENSOR)
     if isinstance(device, hnap.Siren):
         platforms.append(PLATFORM_SIREN)
-    else:
-        raise InvalidDeviceType(str(device.__class))
+
+    if not platforms:
+        raise InvalidDeviceType(str(device.__class__))
 
     return {
         CONF_NAME: device.info["ModelName"],

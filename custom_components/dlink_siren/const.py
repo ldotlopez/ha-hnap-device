@@ -23,5 +23,5 @@
 DOMAIN = "dlink_siren"
 CONF_PLATFORMS = "platforms"
 PLATFORM_CAMERA = "camera"
-PLATFORM_MOTION = "motion"
+PLATFORM_BINARY_SENSOR = "binary_sensor"
 PLATFORM_SIREN = "siren"

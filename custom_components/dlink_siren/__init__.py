@@ -29,11 +29,16 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_HOST
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, PLATFORM_SIREN, CONF_PLATFORMS
+from .const import (
+    DOMAIN,
+    PLATFORM_BINARY_SENSOR,
+    PLATFORM_SIREN,
+    CONF_PLATFORMS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS: list[str] = [PLATFORM_SIREN]
+PLATFORMS: list[str] = [PLATFORM_BINARY_SENSOR, PLATFORM_SIREN]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

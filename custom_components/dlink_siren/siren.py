@@ -21,31 +21,39 @@
 from typing import Optional
 
 import hnap
-from homeassistant.components.siren import (SUPPORT_DURATION, SUPPORT_TONES,
-                                            SUPPORT_TURN_OFF, SUPPORT_TURN_ON,
-                                            SUPPORT_VOLUME_SET, SirenEntity)
+from homeassistant.components.siren import (
+    SUPPORT_DURATION,
+    SUPPORT_TONES,
+    SUPPORT_TURN_OFF,
+    SUPPORT_TURN_ON,
+    SUPPORT_VOLUME_SET,
+    SirenEntity,
+)
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
 from .const import DOMAIN, PLATFORM_SIREN
+PLATFORM = PLATFORM_SIREN
 
 
-class DLinkSiren(SirenEntity):
-    def __init__(self, name, api, unique_id):
+class HNAPSiren(SirenEntity):
+    def __init__(self, info, api, unique_id):
         # homeassistant.helpers.entity.Entity
         self._attr_unique_id = unique_id
-        self._attr_name = name
 
         # homeassistant.helpers.entity.DeviceInfo
         self._attr_device_info = {
-            "identifiers": {(DOMAIN, self.unique_id)},
-            "manufacturer": "D-Link",
-            "model": "D-220",
-            "name": self._attr_name,
+            "identifiers": {
+                (DOMAIN, self.unique_id),
+                ("mac", api.info["DeviceMacId"]),
+            },
+            "manufacturer": api.info["VendorName"],
+            "model": api.info["ModelName"],
+            "name": api.info["DeviceName"],
         }
+        self._attr_name = self._attr_device_info["name"]
 
         # homeassistant.components.siren.Siren
         self._attr_is_on = False
@@ -87,9 +95,9 @@ async def async_setup_entry(
 ):
     add_entities(
         [
-            DLinkSiren(
-                name=config_entry.data[CONF_NAME],
-                api=hass.data[DOMAIN][PLATFORM_SIREN][config_entry.entry_id],
+            HNAPSiren(
+                info=config_entry.data,
+                api=hass.data[DOMAIN][PLATFORM][config_entry.entry_id],
                 unique_id=config_entry.entry_id,
             )
         ],
