@@ -21,21 +21,16 @@
 from typing import Optional
 
 import hnap
-from homeassistant.components.siren import (
-    SUPPORT_DURATION,
-    SUPPORT_TONES,
-    SUPPORT_TURN_OFF,
-    SUPPORT_TURN_ON,
-    SUPPORT_VOLUME_SET,
-    SirenEntity,
-)
+from homeassistant.components.siren import (SUPPORT_DURATION, SUPPORT_TONES,
+                                            SUPPORT_TURN_OFF, SUPPORT_TURN_ON,
+                                            SUPPORT_VOLUME_SET, SirenEntity)
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
-from . import _LOGGER
-from .const import DEFAULT_NAME, DOMAIN
+from .const import DOMAIN, PLATFORM_SIREN
 
 
 class DLinkSiren(SirenEntity):
@@ -90,30 +85,11 @@ async def async_setup_entry(
         DiscoveryInfoType
     ] = None,  # noqa DiscoveryInfoType | None
 ):
-    # config_enty.as_dict()
-    # {
-    #     "data": {
-    #         "host": "127.0.0.1",
-    #         "password": "123456",
-    #         "username": "admin",
-    #     },
-    #     "disabled_by": None,
-    #     "domain": "dlink_siren",
-    #     "entry_id": "0123456789abcdef0123456789abcdef",
-    #     "options": {},
-    #     "pref_disable_new_entities": False,
-    #     "pref_disable_polling": False,
-    #     "source": "user",
-    #     "name": "D-Link siren",
-    #     "unique_id": None,
-    #     "version": 1,
-    # }
-
     add_entities(
         [
             DLinkSiren(
-                name=config_entry.data.get("name", DEFAULT_NAME),
-                api=hass.data[DOMAIN][config_entry.entry_id],
+                name=config_entry.data[CONF_NAME],
+                api=hass.data[DOMAIN][PLATFORM_SIREN][config_entry.entry_id],
                 unique_id=config_entry.entry_id,
             )
         ],

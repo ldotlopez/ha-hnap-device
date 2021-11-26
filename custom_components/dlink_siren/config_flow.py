@@ -21,25 +21,33 @@
 """Config flow for D-Link Siren (S220) integration."""
 from __future__ import annotations
 
-import logging
+import functools
 from typing import Any
 
+import hnap
+import requests
 import voluptuous as vol
-
 from homeassistant import config_entries
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_NAME,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 
-from .const import DOMAIN, DEFAULT_NAME
+from . import _LOGGER
+from .const import (
+    CONF_PLATFORMS,
+    DOMAIN,
+    PLATFORM_CAMERA,
+    PLATFORM_MOTION,
+    PLATFORM_SIREN,
+    PLATFORMS,
+)
 
-import hnap
-import requests
-
-
-_LOGGER = logging.getLogger(__name__)
-
-# TODO adjust the data schema to the data that you need
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required("host"): str,
@@ -58,12 +66,15 @@ async def validate_input(
     user.
     """
 
-    siren = hnap.Siren(
-        hostname=data["host"], pin=data["password"], username=data["username"]
+    fn = functools.partial(
+        hnap.DeviceFactory,
+        hostname=data[CONF_HOST],
+        password=data[CONF_PASSWORD],
+        username=data[CONF_USERNAME],
     )
-
+    device = await hass.async_add_executor_job(fn)
     try:
-        await hass.async_add_executor_job(siren.login)
+        await hass.async_add_executor_job(device.authenticate)
 
     except requests.exceptions.ConnectionError as e:
         raise CannotConnect() from e
@@ -71,8 +82,24 @@ async def validate_input(
     except hnap.AuthenticationError as e:
         raise InvalidAuth() from e
 
-    # Return info that you want to store in the config entry.
-    return {"name": DEFAULT_NAME}
+    platforms = []
+    # if isinstance(device, hnap.Camera):
+    #     # 'Optical Recognition', 'Environmental Sensor', 'Camera']
+    #     platforms.append(PLATFORM_CAMERA)
+    # if isinstance(device, hnap.Motion):
+    #     platforms.append(PLATFORM_MOTION)
+    if isinstance(device, hnap.Siren):
+        platforms.append(PLATFORM_SIREN)
+    else:
+        raise InvalidDeviceType(str(device.__class))
+
+    return {
+        CONF_NAME: device.info["ModelName"],
+        CONF_HOST: data[CONF_HOST],
+        CONF_PASSWORD: data[CONF_PASSWORD],
+        CONF_USERNAME: data[CONF_USERNAME],
+        CONF_PLATFORMS: platforms,
+    }
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -97,11 +124,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors["base"] = "cannot_connect"
         except InvalidAuth:
             errors["base"] = "invalid_auth"
+        except InvalidDeviceType as e:
+            errors["base"] = f"Invalid device type: {e.args(0)}"
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
         else:
-            return self.async_create_entry(title=info["name"], data=user_input)
+            return self.async_create_entry(title=info["name"], data=info)
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
@@ -117,4 +146,8 @@ class CannotConnect(HomeAssistantError):
 class InvalidAuth(HomeAssistantError):
     """Error to indicate there is invalid auth."""
 
+    pass
+
+
+class InvalidDeviceType(HomeAssistantError):
     pass

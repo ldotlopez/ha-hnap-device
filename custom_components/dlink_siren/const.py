@@ -21,4 +21,7 @@
 """Constants for the D-Link Siren (S220) integration."""
 
 DOMAIN = "dlink_siren"
-DEFAULT_NAME = "D-Link Siren (D-220)"
+CONF_PLATFORMS = "platforms"
+PLATFORM_CAMERA = "camera"
+PLATFORM_MOTION = "motion"
+PLATFORM_SIREN = "siren"
