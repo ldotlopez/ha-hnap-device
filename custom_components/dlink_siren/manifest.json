@@ -4,10 +4,9 @@
   "config_flow": true,
   "documentation": "https://github.com/ldotlopez/ha-dlink-siren",
   "issue_tracker": "https://github.com/ldotlopez/ha-dlink-siren/issues",
-  "requirements_": [
+  "requirements": [
     "hnap==0.0.5"
   ],
-  "requirements": [],
   "ssdp": [],
   "zeroconf": [],
   "homekit": {},
