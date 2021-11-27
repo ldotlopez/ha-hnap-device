@@ -1,3 +1,3 @@
-# Home Assistant D-Link Siren (D-220) component
+# Home Assistant HNAP device component
 
 See [https://github.com/ldotlopez/python-hnap](https://github.com/ldotlopez/python-hnap)

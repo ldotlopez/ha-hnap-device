@@ -1,6 +1,6 @@
 {
-  "name": "D-Link Siren (D-220)",
+  "name": "HNAP device",
   "render_readme": true,
-  "domains": ["siren"],
+  "domains": ["binary_sensor", "siren"],
   "content_in_root": false
 }

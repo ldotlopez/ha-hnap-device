@@ -18,9 +18,9 @@
 # USA.
 
 
-"""Constants for the D-Link Siren (S220) integration."""
+"""Constants for HNAP device integration."""
 
-DOMAIN = "dlink_siren"
+DOMAIN = "hnap_device"
 CONF_PLATFORMS = "platforms"
 PLATFORM_CAMERA = "camera"
 PLATFORM_BINARY_SENSOR = "binary_sensor"

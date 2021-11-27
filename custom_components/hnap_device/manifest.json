@@ -1,0 +1,19 @@
+{
+  "domain": "hnap_device",
+  "name": "HNAP device",
+  "config_flow": true,
+  "documentation": "https://github.com/ldotlopez/ha-hnap-device",
+  "issue_tracker": "https://github.com/ldotlopez/ha-hnap-device/issues",
+  "requirements": [
+    "hnap==0.0.5"
+  ],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@ldotlopez"
+  ],
+  "iot_class": "local_polling",
+  "version": "0.1.0"
+}

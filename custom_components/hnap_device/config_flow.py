@@ -18,7 +18,7 @@
 # USA.
 
 
-"""Config flow for D-Link Siren (S220) integration."""
+"""Config flow for HNAP device integration."""
 from __future__ import annotations
 
 import functools
@@ -103,7 +103,7 @@ async def validate_input(
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for D-Link Siren (S220)."""
+    """Handle a config flow for HNAP device."""
 
     VERSION = 1
 

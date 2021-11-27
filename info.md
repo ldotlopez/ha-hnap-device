@@ -1,3 +1,3 @@
-# D-Link Siren (S220) integration
+# HNAP device integration
 
 TODO…

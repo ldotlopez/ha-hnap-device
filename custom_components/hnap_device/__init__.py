@@ -18,7 +18,7 @@
 # USA.
 
 
-"""The D-Link Siren (S220) integration."""
+"""The HNAP device integration."""
 from __future__ import annotations
 
 import functools
@@ -42,7 +42,7 @@ PLATFORMS: list[str] = [PLATFORM_BINARY_SENSOR, PLATFORM_SIREN]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up D-Link Siren (S220) from a config entry."""
+    """Set up HNAP device from a config entry."""
 
     hass.data[DOMAIN] = hass.data.get(DOMAIN, {})
     for platform in entry.data[CONF_PLATFORMS]:

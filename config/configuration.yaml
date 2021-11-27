@@ -3,5 +3,4 @@ logger:
   default: warning
   logs:
     hnap: debug
-    custom_components.dlink_siren: debug
-    homeassistant.components.siren: debug
+    custom_components.hnap_device: debug

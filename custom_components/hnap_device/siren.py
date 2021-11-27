@@ -18,6 +18,8 @@
 # USA.
 
 
+"""Siren sensor for HNAP device integration."""
+
 from typing import Optional
 
 import hnap
@@ -68,7 +70,6 @@ class HNAPSiren(SirenEntity):
             x.name.lower().replace("_", "-"): x.value for x in hnap.Sound
         }
 
-        # dlink_siren.Siren
         self._api = api
 
     def update(self):
