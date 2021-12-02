@@ -23,6 +23,7 @@
 from typing import Optional
 
 import hnap
+import requests.exceptions
 from homeassistant.components.siren import (
     SUPPORT_DURATION,
     SUPPORT_TONES,
@@ -36,7 +37,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
+from . import _LOGGER
 from .const import DOMAIN, PLATFORM_SIREN
+
 PLATFORM = PLATFORM_SIREN
 
 
@@ -73,7 +76,11 @@ class HNAPSiren(SirenEntity):
         self._api = api
 
     def update(self):
-        self._attr_is_on = self._api.is_playing()
+        try:
+            self._attr_is_on = self._api.is_playing()
+        except requests.exceptions.ConnectionError as e:
+            _LOGGER.error(e)
+            self._attr_is_on = None
 
     def turn_on(self, volume_level=1, duration=15, tone="police") -> None:
         self._api.play(

@@ -21,17 +21,19 @@
 
 from typing import Optional
 
-import hnap
+import requests.exceptions
 from homeassistant.components.binary_sensor import (
-    BinarySensorEntity,
     DEVICE_CLASS_MOTION,
+    BinarySensorEntity,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
+from . import _LOGGER
 from .const import DOMAIN, PLATFORM_BINARY_SENSOR
+
 PLATFORM = PLATFORM_BINARY_SENSOR
 
 
@@ -56,7 +58,11 @@ class HNAPMotion(BinarySensorEntity):
         self._api = api
 
     def update(self):
-        self._attr_is_on = self._api.is_active()
+        try:
+            self._attr_is_on = self._api.is_active()
+        except requests.exceptions.ConnectionError as e:
+            _LOGGER.error(e)
+            self._attr_is_on = None
 
 
 async def async_setup_entry(
