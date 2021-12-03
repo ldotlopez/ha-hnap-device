@@ -21,7 +21,6 @@
 """The HNAP device integration."""
 from __future__ import annotations
 
-import functools
 import logging
 
 import hnap
@@ -32,6 +31,7 @@ from homeassistant.core import HomeAssistant
 from .const import (
     DOMAIN,
     PLATFORM_BINARY_SENSOR,
+    PLATFORM_CAMERA,
     PLATFORM_SIREN,
     CONF_PLATFORMS,
 )
@@ -48,15 +48,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     for platform in entry.data[CONF_PLATFORMS]:
         hass.data[DOMAIN][platform] = hass.data[DOMAIN].get(platform, {})
 
-    # Store an API object for your platforms to access
-    fn = functools.partial(
-        hnap.DeviceFactory,
+    m = {
+        "binary_sensor": hnap.Motion,
+        "camera": hnap.Camera,
+        "siren": hnap.Siren,
+    }
+    api = m[platform](
         hostname=entry.data[CONF_HOST],
         password=entry.data[CONF_PASSWORD],
         username=entry.data[CONF_USERNAME],
     )
-
-    api = await hass.async_add_executor_job(fn)
     await hass.async_add_executor_job(api.authenticate)
 
     hass.data[DOMAIN][platform][entry.entry_id] = api

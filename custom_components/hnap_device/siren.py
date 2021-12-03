@@ -39,28 +39,14 @@ from homeassistant.helpers.typing import DiscoveryInfoType
 
 from . import _LOGGER
 from .const import DOMAIN, PLATFORM_SIREN
+from .hnap_entity import HNapEntity
 
 PLATFORM = PLATFORM_SIREN
 
 
-class HNAPSiren(SirenEntity):
+class HNAPSiren(HNapEntity, SirenEntity):
     def __init__(self, info, api, unique_id):
-        # homeassistant.helpers.entity.Entity
-        self._attr_unique_id = unique_id
-
-        # homeassistant.helpers.entity.DeviceInfo
-        self._attr_device_info = {
-            "identifiers": {
-                (DOMAIN, self.unique_id),
-                ("mac", api.info["DeviceMacId"]),
-            },
-            "manufacturer": api.info["VendorName"],
-            "model": api.info["ModelName"],
-            "name": api.info["DeviceName"],
-        }
-        self._attr_name = self._attr_device_info["name"]
-
-        # homeassistant.components.siren.Siren
+        super().__init__(info, api, unique_id)
         self._attr_is_on = False
         self._attr_supported_features = (
             SUPPORT_TURN_ON
@@ -72,8 +58,6 @@ class HNAPSiren(SirenEntity):
         self._attr_available_tones = {
             x.name.lower().replace("_", "-"): x.value for x in hnap.Sound
         }
-
-        self._api = api
 
     def update(self):
         try:

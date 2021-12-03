@@ -21,36 +21,31 @@
 
 from typing import Optional
 
-import requests.exceptions
-from homeassistant.components.binary_sensor import (
-    DEVICE_CLASS_MOTION,
-    BinarySensorEntity,
+from homeassistant.components.camera import (
+    SUPPORT_STREAM,
+    Camera,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
-
+from typing import Optional
 from . import _LOGGER
-from .const import DOMAIN, PLATFORM_BINARY_SENSOR
+from .const import DOMAIN, PLATFORM_CAMERA
 
 from .hnap_entity import HNapEntity
 
-PLATFORM = PLATFORM_BINARY_SENSOR
+PLATFORM = PLATFORM_CAMERA
 
 
-class HNAPMotion(HNapEntity, BinarySensorEntity):
+class HNAPCamera(HNapEntity, Camera):
     def __init__(self, info, api, unique_id):
         super().__init__(info, api, unique_id)
 
-        self._attr_device_class = DEVICE_CLASS_MOTION
+        self._attr_supported_features = SUPPORT_STREAM
 
-    def update(self):
-        try:
-            self._attr_is_on = self._api.is_active()
-        except requests.exceptions.ConnectionError as e:
-            _LOGGER.error(e)
-            self._attr_is_on = None
+    async def stream_source(self) -> Optional[str]:
+        return self._api.stream_url
 
 
 async def async_setup_entry(
@@ -63,9 +58,12 @@ async def async_setup_entry(
 ):
     api = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
 
+    _LOGGER.error("camera support is not implemented yet")
+    return
+
     add_entities(
         [
-            HNAPMotion(
+            HNAPCamera(
                 info=config_entry.data,
                 api=api,
                 unique_id=config_entry.entry_id,

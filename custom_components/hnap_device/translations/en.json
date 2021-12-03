@@ -6,6 +6,7 @@
         "error": {
             "cannot_connect": "Failed to connect",
             "invalid_auth": "Invalid authentication",
+            "invalid_device_type": "Invalid device type",
             "unknown": "Unexpected error"
         },
         "step": {

@@ -82,9 +82,9 @@ async def validate_input(
         raise InvalidAuth() from e
 
     platforms = []
-    # if isinstance(device, hnap.Camera):
-    #     # 'Optical Recognition', 'Environmental Sensor', 'Camera']
-    #     platforms.append(PLATFORM_CAMERA)
+    if isinstance(device, hnap.Camera):
+        # 'Optical Recognition', 'Environmental Sensor', 'Camera']
+        platforms.append(PLATFORM_CAMERA)
     if isinstance(device, hnap.Motion):
         platforms.append(PLATFORM_BINARY_SENSOR)
     if isinstance(device, hnap.Siren):
@@ -124,8 +124,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors["base"] = "cannot_connect"
         except InvalidAuth:
             errors["base"] = "invalid_auth"
-        except InvalidDeviceType as e:
-            errors["base"] = f"Invalid device type: {e.args(0)}"
+        except InvalidDeviceType:
+            errors["base"] = "invalid_device_type"
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
