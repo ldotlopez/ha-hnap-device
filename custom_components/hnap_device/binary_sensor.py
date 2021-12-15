@@ -19,6 +19,7 @@
 
 """Binary sensor for HNAP device integration."""
 
+from datetime import timedelta
 from typing import Optional
 
 import requests.exceptions
@@ -33,10 +34,11 @@ from homeassistant.helpers.typing import DiscoveryInfoType
 
 from . import _LOGGER
 from .const import DOMAIN, PLATFORM_BINARY_SENSOR
-
 from .hnap_entity import HNapEntity
 
 PLATFORM = PLATFORM_BINARY_SENSOR
+
+SCAN_INTERVAL = timedelta(seconds=5)
 
 
 class HNAPMotion(HNapEntity, BinarySensorEntity):
