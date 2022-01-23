@@ -71,8 +71,8 @@ async def validate_input(
         password=data[CONF_PASSWORD],
         username=data[CONF_USERNAME],
     )
-    device = await hass.async_add_executor_job(fn)
     try:
+        device = await hass.async_add_executor_job(fn)
         await hass.async_add_executor_job(device.authenticate)
 
     except requests.exceptions.ConnectionError as e:
