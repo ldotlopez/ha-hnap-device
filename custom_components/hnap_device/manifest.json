@@ -5,7 +5,7 @@
   "documentation": "https://github.com/ldotlopez/ha-hnap-device",
   "issue_tracker": "https://github.com/ldotlopez/ha-hnap-device/issues",
   "requirements": [
-    "hnap==0.1.0"
+    "hnap==0.1.1"
   ],
   "ssdp": [],
   "zeroconf": [],
