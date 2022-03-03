@@ -19,17 +19,17 @@
 
 
 class HNapEntity:
-    def __init__(self, info, api, unique_id, *args, **kwargs):
+    def __init__(self, unique_id, device_info, api, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self._attr_unique_id = unique_id
         self._attr_device_info = {
             "identifiers": {
-                ("mac", api.info["DeviceMacId"]),
+                ("mac", device_info["DeviceMacId"]),
             },
-            "manufacturer": api.info["VendorName"],
-            "model": api.info["ModelName"],
-            "name": api.info["DeviceName"],
+            "manufacturer": device_info["VendorName"],
+            "model": device_info["ModelName"],
+            "name": device_info["DeviceName"],
         }
         self._attr_name = self._attr_device_info["name"]
 

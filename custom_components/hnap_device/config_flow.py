@@ -24,7 +24,7 @@ from __future__ import annotations
 import functools
 from typing import Any
 
-import hnap
+import hnap.soapclient
 import requests
 import voluptuous as vol
 from homeassistant import config_entries
@@ -56,9 +56,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 )
 
 
-async def validate_input(
-    hass: HomeAssistant, data: dict[str, Any]
-) -> dict[str, Any]:
+async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect.
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the
@@ -73,7 +71,6 @@ async def validate_input(
     )
     try:
         device = await hass.async_add_executor_job(fn)
-        await hass.async_add_executor_job(device.authenticate)
 
     except requests.exceptions.ConnectionError as e:
         raise CannotConnect() from e
@@ -93,8 +90,9 @@ async def validate_input(
     if not platforms:
         raise InvalidDeviceType(str(device.__class__))
 
+    info = await hass.async_add_executor_job(device.client.device_info)
     return {
-        CONF_NAME: device.info["ModelName"],
+        CONF_NAME: info["ModelName"],
         CONF_HOST: data[CONF_HOST],
         CONF_PASSWORD: data[CONF_PASSWORD],
         CONF_USERNAME: data[CONF_USERNAME],
@@ -102,7 +100,7 @@ async def validate_input(
     }
 
 
-class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call-arg]
     """Handle a config flow for HNAP device."""
 
     VERSION = 1

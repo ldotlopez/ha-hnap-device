@@ -42,8 +42,8 @@ SCAN_INTERVAL = timedelta(seconds=5)
 
 
 class HNAPMotion(HNapEntity, BinarySensorEntity):
-    def __init__(self, info, api, unique_id):
-        super().__init__(info, api, unique_id)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self._attr_device_class = DEVICE_CLASS_MOTION
 
@@ -64,13 +64,14 @@ async def async_setup_entry(
     ] = None,  # noqa DiscoveryInfoType | None
 ):
     api = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
+    device_info = await hass.async_add_executor_job(api.get_info)
 
     add_entities(
         [
             HNAPMotion(
-                info=config_entry.data,
-                api=api,
                 unique_id=config_entry.entry_id,
+                device_info=device_info,
+                api=api,
             )
         ],
         update_before_add=True,

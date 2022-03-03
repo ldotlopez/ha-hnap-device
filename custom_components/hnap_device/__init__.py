@@ -53,14 +53,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "camera": hnap.Camera,
         "siren": hnap.Siren,
     }
-    api = m[platform](
+
+    client = hnap.soapclient.SoapClient(
         hostname=entry.data[CONF_HOST],
         password=entry.data[CONF_PASSWORD],
         username=entry.data[CONF_USERNAME],
     )
-    await hass.async_add_executor_job(api.authenticate)
+    await hass.async_add_executor_job(client.authenticate)
 
-    hass.data[DOMAIN][platform][entry.entry_id] = api
+    # Save device api
+    hass.data[DOMAIN][platform][entry.entry_id] = m[platform](client=client)
 
     # Setup platforms
     hass.config_entries.async_setup_platforms(

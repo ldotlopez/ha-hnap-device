@@ -45,8 +45,8 @@ PLATFORM = PLATFORM_SIREN
 
 
 class HNAPSiren(HNapEntity, SirenEntity):
-    def __init__(self, info, api, unique_id):
-        super().__init__(info, api, unique_id)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._attr_is_on = False
         self._attr_supported_features = (
             SUPPORT_TURN_ON
@@ -56,7 +56,7 @@ class HNAPSiren(HNapEntity, SirenEntity):
             | SUPPORT_VOLUME_SET
         )
         self._attr_available_tones = {
-            x.name.lower().replace("_", "-"): x.value for x in hnap.Sound
+            x.name.lower().replace("_", "-"): x.value for x in hnap.SirenSound
         }
 
     def update(self):
@@ -81,16 +81,17 @@ async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     add_entities: AddEntitiesCallback,
-    discovery_info: Optional[
-        DiscoveryInfoType
-    ] = None,  # noqa DiscoveryInfoType | None
+    discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
 ):
+    api = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
+    device_info = await hass.async_add_executor_job(api.client.device_info)
+
     add_entities(
         [
             HNAPSiren(
-                info=config_entry.data,
-                api=hass.data[DOMAIN][PLATFORM][config_entry.entry_id],
                 unique_id=config_entry.entry_id,
+                device_info=device_info,
+                api=api,
             )
         ],
         update_before_add=True,
