@@ -68,7 +68,7 @@ class HNAPSiren(HNapEntity, SirenEntity):
 
     def turn_on(self, volume_level=1, duration=15, tone="police") -> None:
         self._api.play(
-            sound=hnap.Sound.fromstring(tone),
+            sound=hnap.SirenSound.fromstring(tone),
             volume=int(volume_level * 100),
             duration=duration,
         )
