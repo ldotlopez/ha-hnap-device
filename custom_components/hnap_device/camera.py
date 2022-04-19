@@ -21,18 +21,14 @@
 
 from typing import Optional
 
-from homeassistant.components.camera import (
-    SUPPORT_STREAM,
-    Camera,
-)
+from homeassistant.components.camera import SUPPORT_STREAM, Camera
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
-from typing import Optional
+
 from . import _LOGGER
 from .const import DOMAIN, PLATFORM_CAMERA
-
 from .hnap_entity import HNapEntity
 
 PLATFORM = PLATFORM_CAMERA
@@ -52,9 +48,7 @@ async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     add_entities: AddEntitiesCallback,
-    discovery_info: Optional[
-        DiscoveryInfoType
-    ] = None,  # noqa DiscoveryInfoType | None
+    discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
 ):
     api = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
 

@@ -62,9 +62,14 @@ class HNAPSiren(HNapEntity, SirenEntity):
     def update(self):
         try:
             self._attr_is_on = self._api.is_playing()
+
         except requests.exceptions.ConnectionError as e:
             _LOGGER.error(e)
             self._attr_is_on = None
+            self.hnap_update_failure()
+
+        else:
+            self.hnap_update_success()
 
     def turn_on(self, volume_level=1, duration=15, tone="police") -> None:
         self._api.play(

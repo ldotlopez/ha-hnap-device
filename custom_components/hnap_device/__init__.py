@@ -18,23 +18,16 @@
 # USA.
 
 
-"""The HNAP device integration."""
-from __future__ import annotations
-
 import logging
 
 import hnap
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_HOST
-from homeassistant.core import HomeAssistant
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 
-from .const import (
-    DOMAIN,
-    PLATFORM_BINARY_SENSOR,
-    PLATFORM_CAMERA,
-    PLATFORM_SIREN,
-    CONF_PLATFORMS,
-)
+from .const import CONF_PLATFORMS, DOMAIN, PLATFORM_BINARY_SENSOR, PLATFORM_SIREN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -75,9 +68,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
 
-    unload_ok = await hass.config_entries.async_unload_platforms(
-        entry, PLATFORMS
-    )
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
     if unload_ok:
         for platform in entry.data[CONF_PLATFORMS]:

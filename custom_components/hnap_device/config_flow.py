@@ -28,12 +28,7 @@ import hnap.soapclient
 import requests
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import (
-    CONF_HOST,
-    CONF_NAME,
-    CONF_PASSWORD,
-    CONF_USERNAME,
-)
+from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
@@ -42,8 +37,8 @@ from . import _LOGGER
 from .const import (
     CONF_PLATFORMS,
     DOMAIN,
-    PLATFORM_CAMERA,
     PLATFORM_BINARY_SENSOR,
+    PLATFORM_CAMERA,
     PLATFORM_SIREN,
 )
 

@@ -18,6 +18,12 @@
 # USA.
 
 
+import time
+
+from . import _LOGGER
+from .const import MAX_FAILURES_BEFORE_UNAVAILABLE, MAX_UPTIME_BEFORE_REBOOT
+
+
 class HNapEntity:
     def __init__(self, unique_id, device_info, api, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,3 +40,23 @@ class HNapEntity:
         self._attr_name = self._attr_device_info["name"]
 
         self._api = api
+        self._consecutive_failures = 0
+        self._boot_ts = time.monotonic()
+
+    def hnap_update_success(self):
+        self._consecutive_failures = 0
+
+        uptime = time.monotonic() - self._boot_ts
+        _LOGGER.debug(f"Device uptime: {uptime:.2f}/{MAX_UPTIME_BEFORE_REBOOT}")
+
+        if self.available and uptime > MAX_UPTIME_BEFORE_REBOOT:
+            _LOGGER.debug("Device must be rebooted")
+            # self._api.client.call("Reboot")
+            self._boot_ts = time.monotonic()
+
+    def hnap_update_failure(self):
+        self._consecutive_failures = self._consecutive_failures + 1
+
+    @property
+    def available(self):
+        return self._consecutive_failures < MAX_FAILURES_BEFORE_UNAVAILABLE

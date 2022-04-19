@@ -50,18 +50,21 @@ class HNAPMotion(HNapEntity, BinarySensorEntity):
     def update(self):
         try:
             self._attr_is_on = self._api.is_active()
+
         except requests.exceptions.ConnectionError as e:
             _LOGGER.error(e)
             self._attr_is_on = None
+            self.hnap_update_failure()
+
+        else:
+            self.hnap_update_success()
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     add_entities: AddEntitiesCallback,
-    discovery_info: Optional[
-        DiscoveryInfoType
-    ] = None,  # noqa DiscoveryInfoType | None
+    discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
 ):
     api = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
     device_info = await hass.async_add_executor_job(api.get_info)
