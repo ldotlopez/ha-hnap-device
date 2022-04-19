@@ -1,0 +1,68 @@
+# Service ID
+call:
+
+  # Service name as shown in UI
+  name: Call HNAP method
+
+  # Description of the service
+  description: Call HNAP method
+
+  # If the service accepts entity IDs, target allows the user to specify
+  # entities by entity, device, or area. If `target` is specified, `entity_id`
+  # should not be defined in the `fields` map. By default it shows only targets
+  # matching entities from the same domain as the service, but if further
+  # customization is required, target supports the entity, device, and area
+  # selectors (https://www.home-assistant.io/docs/blueprint/selectors/).
+  #
+  # Entity selector parameters will automatically be applied to device and
+  # area, and device selector parameters will automatically be applied to area.
+  target:
+    device:
+      integration: hnap_device
+
+  # Different fields that your service accepts
+  fields:
+
+    # Key of the field
+    method:
+
+      # Field name as shown in UI
+      name: Method
+
+      # Description of the field
+      description: Method to call
+
+      # Whether or not field is required (default = false)
+      required: true
+
+      # Advanced fields are only shown when the advanced mode is enabled for
+      # the user (default = false)
+      advanced: false
+
+      # Example value that can be passed for this field
+      example: "GetDeviceSettings"
+
+      # The default field value
+      default: "GetDeviceSettings"
+
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to
+      # control the input UI for this field
+      selector:
+        text:
+
+      # selector:
+      #   select:
+      #     options:
+      #       - "off"
+      #       - "low"
+      #       - "medium"
+      #       - "high"
+
+    parameters:
+      name: Parameters
+      description:
+        Parameters for the method, method specific
+      required: false
+      advanced: false
+      selector:
+        object:

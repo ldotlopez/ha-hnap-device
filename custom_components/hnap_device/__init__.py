@@ -18,14 +18,15 @@
 # USA.
 
 
+import functools
 import logging
+from typing import Dict
 
 import hnap
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
-from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import service
 
 from .const import CONF_PLATFORMS, DOMAIN, PLATFORM_BINARY_SENSOR, PLATFORM_SIREN
 
@@ -58,9 +59,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][platform][entry.entry_id] = m[platform](client=client)
 
     # Setup platforms
-    hass.config_entries.async_setup_platforms(
-        entry, entry.data[CONF_PLATFORMS]
-    )
+    hass.config_entries.async_setup_platforms(entry, entry.data[CONF_PLATFORMS])
+
+    # Register service
+    async def _handle_service_call(call):
+        nonlocal hass
+        await handle_service_call(hass, call)
+
+    hass.services.async_register(DOMAIN, "call", _handle_service_call)
 
     return True
 
@@ -75,3 +81,25 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             hass.data[DOMAIN][platform].pop(entry.entry_id)
 
     return unload_ok
+
+
+async def handle_service_call(hass: HomeAssistant, call: ServiceCall) -> None:
+    config_ids = await service.async_extract_config_entry_ids(hass, call)
+
+    for platform in hass.data[DOMAIN]:
+        for (config_id, obj) in hass.data[DOMAIN][platform].items():
+            if config_id in config_ids:
+                fn = functools.partial(
+                    _execute_hnap_call,
+                    obj,
+                    call.data["method"],
+                    **call.data.get("parameters", {}),
+                )
+                await hass.async_add_executor_job(fn)
+
+
+def _execute_hnap_call(
+    target: hnap.devices.Device, method: str, **parameters: Dict[str, str]
+) -> None:
+    resp = target.client.call(method, **parameters)
+    _LOGGER.debug(f"{target}.{method}({parameters}) = {resp}")
