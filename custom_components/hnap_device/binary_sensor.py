@@ -19,7 +19,6 @@
 
 """Binary sensor for HNAP device integration."""
 
-from datetime import timedelta
 from typing import Optional
 
 import requests.exceptions
@@ -38,8 +37,6 @@ from .hnap_entity import HNapEntity
 
 PLATFORM = PLATFORM_BINARY_SENSOR
 
-SCAN_INTERVAL = timedelta(seconds=5)
-
 
 class HNAPMotion(HNapEntity, BinarySensorEntity):
     def __init__(self, *args, **kwargs):
@@ -49,7 +46,7 @@ class HNAPMotion(HNapEntity, BinarySensorEntity):
 
     def update(self):
         try:
-            self._attr_is_on = self._api.is_active()
+            self._attr_is_on = self.device.is_active()
 
         except requests.exceptions.ConnectionError as e:
             _LOGGER.error(e)
@@ -66,15 +63,15 @@ async def async_setup_entry(
     add_entities: AddEntitiesCallback,
     discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
 ):
-    api = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
-    device_info = await hass.async_add_executor_job(api.get_info)
+    device = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
+    device_info = await hass.async_add_executor_job(device.client.device_info)
 
     add_entities(
         [
             HNAPMotion(
                 unique_id=config_entry.entry_id,
                 device_info=device_info,
-                api=api,
+                device=device,
             )
         ],
         update_before_add=True,

@@ -50,14 +50,6 @@ call:
       selector:
         text:
 
-      # selector:
-      #   select:
-      #     options:
-      #       - "off"
-      #       - "low"
-      #       - "medium"
-      #       - "high"
-
     parameters:
       name: Parameters
       description:

@@ -61,7 +61,7 @@ class HNAPSiren(HNapEntity, SirenEntity):
 
     def update(self):
         try:
-            self._attr_is_on = self._api.is_playing()
+            self._attr_is_on = self.device.is_playing()
 
         except requests.exceptions.ConnectionError as e:
             _LOGGER.error(e)
@@ -72,14 +72,14 @@ class HNAPSiren(HNapEntity, SirenEntity):
             self.hnap_update_success()
 
     def turn_on(self, volume_level=1, duration=15, tone="police") -> None:
-        self._api.play(
+        self.device.play(
             sound=hnap.SirenSound.fromstring(tone),
             volume=int(volume_level * 100),
             duration=duration,
         )
 
     def turn_off(self) -> None:
-        self._api.stop()
+        self.device.stop()
 
 
 async def async_setup_entry(
@@ -88,15 +88,15 @@ async def async_setup_entry(
     add_entities: AddEntitiesCallback,
     discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
 ):
-    api = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
-    device_info = await hass.async_add_executor_job(api.client.device_info)
+    device = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
+    device_info = await hass.async_add_executor_job(device.client.device_info)
 
     add_entities(
         [
             HNAPSiren(
                 unique_id=config_entry.entry_id,
                 device_info=device_info,
-                api=api,
+                device=device,
             )
         ],
         update_before_add=True,

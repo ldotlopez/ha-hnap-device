@@ -35,13 +35,13 @@ PLATFORM = PLATFORM_CAMERA
 
 
 class HNAPCamera(HNapEntity, Camera):
-    def __init__(self, info, api, unique_id):
-        super().__init__(info, api, unique_id)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self._attr_supported_features = SUPPORT_STREAM
 
     async def stream_source(self) -> Optional[str]:
-        return self._api.stream_url
+        return self.device.stream_url
 
 
 async def async_setup_entry(
@@ -50,17 +50,18 @@ async def async_setup_entry(
     add_entities: AddEntitiesCallback,
     discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
 ):
-    api = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
-
     _LOGGER.error("camera support is not implemented yet")
     return
+
+    device = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
+    device_info = await hass.async_add_executor_job(device.client.device_info)
 
     add_entities(
         [
             HNAPCamera(
-                info=config_entry.data,
-                api=api,
                 unique_id=config_entry.entry_id,
+                device_info=device_info,
+                device=device,
             )
         ],
         update_before_add=True,
