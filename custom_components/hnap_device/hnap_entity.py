@@ -22,6 +22,7 @@ import time
 
 from . import _LOGGER
 from .const import MAX_FAILURES_BEFORE_UNAVAILABLE, MAX_UPTIME_BEFORE_REBOOT
+from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 
 
 class HNapEntity:
@@ -30,8 +31,11 @@ class HNapEntity:
 
         self._attr_unique_id = unique_id
         self._attr_device_info = {
+            "connections": {
+                (CONNECTION_NETWORK_MAC, device_info["DeviceMacId"]),
+            },
             "identifiers": {
-                ("mac", device_info["DeviceMacId"]),
+                (CONNECTION_NETWORK_MAC, device_info["DeviceMacId"]),
             },
             "manufacturer": device_info["VendorName"],
             "model": device_info["ModelName"],
