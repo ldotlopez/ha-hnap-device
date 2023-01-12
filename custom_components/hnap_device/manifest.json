@@ -5,15 +5,12 @@
   "documentation": "https://github.com/ldotlopez/ha-hnap-device",
   "issue_tracker": "https://github.com/ldotlopez/ha-hnap-device/issues",
   "requirements": [
-    "hnap>=1.0.0a3,<2.0.0"
+    "hnap>=1.0.0,<2.0.0"
   ],
-  "ssdp": [],
-  "zeroconf": [],
-  "homekit": {},
   "dependencies": [],
   "codeowners": [
     "@ldotlopez"
   ],
   "iot_class": "local_polling",
-  "version": "0.2.0"
+  "version": "1.0.0"
 }

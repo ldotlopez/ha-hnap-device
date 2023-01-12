@@ -1,0 +1,28 @@
+{
+    "folders":
+    [
+        {
+            "file_exclude_patterns": [
+                "*.pyc",
+                "*.swp"
+            ],
+            "folder_exclude_patterns": [
+                "*.egg-info",
+                ".mypy_cache",
+                "__pycache__",
+                "dist",
+            ],
+            "follow_symlinks": true,
+            "path": ".",
+        }
+    ],
+    "settings": {
+        "LSP": {
+           "LSP-pyright": {
+              "settings": {
+                 // Put your settings here
+              }
+           }
+        }
+    }
+}

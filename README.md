@@ -6,7 +6,7 @@
 [![HACS validation](https://github.com/ldotlopez/ha-hnap-device/workflows/Validate%20with%20HACS/badge.svg)](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hacs.yml)
 
 <!-- Code and releases -->
-![GitHub Release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/ldotlopez/ha-hnap-device?include_prereleases)
+[![GitHub Release](https://img.shields.io/github/v/release/ldotlopez/ha-hnap-device?include_prereleases)](https://github.com/ldotlopez/ha-hnap-device/releases)
 [![CodeQL](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/codeql-analysis.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 

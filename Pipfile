@@ -8,6 +8,7 @@ name = "pypi"
 [dev-packages]
 homeassistant = "*"
 types-requests = "*"
+requests = "*"
 
 [requires]
 python_version = "3"
