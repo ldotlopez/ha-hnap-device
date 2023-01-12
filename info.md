@@ -1,3 +1,0 @@
-# HNAP device integration
-
-TODO…
