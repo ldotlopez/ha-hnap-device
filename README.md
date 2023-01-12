@@ -1,8 +1,17 @@
 # Home Assistant HNAP device component
 
-![hassfest validation](https://github.com/ldotlopez/ha-hnap-device/workflows/Validate%20with%20hassfest/badge.svg)
-![HACS validation](https://github.com/ldotlopez/ha-hnap-device/workflows/Validate%20with%20HACS/badge.svg)
+<!-- HomeAssistant badges -->
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![hassfest validation](https://github.com/ldotlopez/ha-hnap-device/workflows/Validate%20with%20hassfest/badge.svg)](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hassfest.yml)
+[![HACS validation](https://github.com/ldotlopez/ha-hnap-device/workflows/Validate%20with%20HACS/badge.svg)](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hacs.yml)
+
+<!-- Code and releases -->
+![GitHub Release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/ldotlopez/ha-hnap-device?include_prereleases)
+[![CodeQL](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/codeql-analysis.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+
+<!-- Sponsors -->
+<a href="https://www.buymeacoffee.com/zepolson" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 30px !important;width: 105px !important;" ></a>
 
 This is a *Work in Progress* integration to Home Assistant supporting HNAP devices. It communicates locally with the devices, i.e. no cloud needed, but only supports polling.
 
