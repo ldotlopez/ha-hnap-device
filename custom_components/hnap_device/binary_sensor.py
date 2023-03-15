@@ -19,11 +19,13 @@
 
 """Binary sensor for HNAP device integration."""
 
+import logging
 from typing import Optional
 
+import hnap
 import requests.exceptions
 from homeassistant.components.binary_sensor import (
-    DEVICE_CLASS_MOTION,
+    BinarySensorDeviceClass,
     BinarySensorEntity,
 )
 from homeassistant.config_entries import ConfigEntry
@@ -31,30 +33,33 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
-from . import _LOGGER
+
 from .const import DOMAIN, PLATFORM_BINARY_SENSOR
-from .hnap_entity import HNapEntity
+from .entity import HNapEntity
 
 PLATFORM = PLATFORM_BINARY_SENSOR
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class HNAPMotion(HNapEntity, BinarySensorEntity):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs, name="motion")
 
-        self._attr_device_class = DEVICE_CLASS_MOTION
+        self._attr_device_class = BinarySensorDeviceClass.MOTION
 
     def update(self):
         try:
-            self._attr_is_on = self.device.is_active()
+            self._attr_is_on = self._api.is_active()
+            self.hnap_update_success()
 
-        except requests.exceptions.ConnectionError as e:
+        except (
+            hnap.soapclient.MethodCallError,
+            requests.exceptions.ConnectionError,
+        ) as e:
             _LOGGER.error(e)
             self._attr_is_on = None
             self.hnap_update_failure()
-
-        else:
-            self.hnap_update_success()
 
 
 async def async_setup_entry(
@@ -63,15 +68,15 @@ async def async_setup_entry(
     add_entities: AddEntitiesCallback,
     discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
 ):
-    device = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
-    device_info = await hass.async_add_executor_job(device.client.device_info)
+    api = hass.data[DOMAIN][config_entry.entry_id]
+    device_info = await hass.async_add_executor_job(api.client.device_info)
 
     add_entities(
         [
             HNAPMotion(
-                unique_id=config_entry.entry_id,
+                unique_id=f"{config_entry.entry_id}-{PLATFORM}",
                 device_info=device_info,
-                device=device,
+                api=api,
             )
         ],
         update_before_add=True,

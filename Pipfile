@@ -9,6 +9,8 @@ name = "pypi"
 homeassistant = "*"
 types-requests = "*"
 requests = "*"
+ipdb = "*"
+ipython = "*"
 
 [requires]
 python_version = "3"

@@ -19,34 +19,36 @@
 
 
 """Config flow for HNAP device integration."""
-from __future__ import annotations
 
 import functools
+import logging
 from typing import Any
 
 import hnap.soapclient
 import requests
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_NAME, CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 
-from . import _LOGGER
 from .const import (
     CONF_PLATFORMS,
     DOMAIN,
     PLATFORM_BINARY_SENSOR,
     PLATFORM_CAMERA,
     PLATFORM_SIREN,
+    DEFAULT_USERNAME,
 )
+
+_LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
-        vol.Required("host"): str,
-        vol.Required("username", default="admin"): str,
-        vol.Required("password"): str,
+        vol.Required(CONF_HOST): str,
+        vol.Required(CONF_USERNAME, default=DEFAULT_USERNAME): str,
+        vol.Required(CONF_PASSWORD): str,
     }
 )
 
@@ -123,7 +125,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
         else:
-            return self.async_create_entry(title=info["name"], data=info)
+            return self.async_create_entry(title=info.pop(CONF_NAME), data=info)
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors

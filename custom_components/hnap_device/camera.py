@@ -19,6 +19,7 @@
 
 """Binary sensor for HNAP device integration."""
 
+import logging
 from typing import Optional
 
 from homeassistant.components.camera import SUPPORT_STREAM, Camera
@@ -27,10 +28,10 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
-from . import _LOGGER
 from .const import DOMAIN, PLATFORM_CAMERA
-from .hnap_entity import HNapEntity
+from .entity import HNapEntity
 
+_LOGGER = logging.getLogger(__name__)
 PLATFORM = PLATFORM_CAMERA
 
 
@@ -53,16 +54,16 @@ async def async_setup_entry(
     _LOGGER.error("camera support is not implemented yet")
     return
 
-    device = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
-    device_info = await hass.async_add_executor_job(device.client.device_info)
-
-    add_entities(
-        [
-            HNAPCamera(
-                unique_id=config_entry.entry_id,
-                device_info=device_info,
-                device=device,
-            )
-        ],
-        update_before_add=True,
-    )
+    # api = hass.data[DOMAIN][config_entry.entry_id]
+    # device_info = await hass.async_add_executor_job(device.client.device_info)
+    #
+    # add_entities(
+    #     [
+    #         HNAPCamera(
+    #             unique_id=config_entry.entry_id,
+    #             device_info=device_info,
+    #             api=api,
+    #         )
+    #     ],
+    #     update_before_add=True,
+    # )

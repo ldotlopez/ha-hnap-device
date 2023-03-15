@@ -28,40 +28,28 @@ from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers import service
 
-from .const import CONF_PLATFORMS, DOMAIN, PLATFORM_BINARY_SENSOR, PLATFORM_SIREN
+from .const import CONF_PLATFORMS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS: list[str] = [PLATFORM_BINARY_SENSOR, PLATFORM_SIREN]
-
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up HNAP device from a config entry."""
-
     hass.data[DOMAIN] = hass.data.get(DOMAIN, {})
-    for platform in entry.data[CONF_PLATFORMS]:
-        hass.data[DOMAIN][platform] = hass.data[DOMAIN].get(platform, {})
 
-    m = {
-        "binary_sensor": hnap.Motion,
-        "camera": hnap.Camera,
-        "siren": hnap.Siren,
-    }
+    def get_api():
+        client = hnap.soapclient.SoapClient(
+            hostname=entry.data[CONF_HOST],
+            password=entry.data[CONF_PASSWORD],
+            username=entry.data[CONF_USERNAME],
+        )
+        return hnap.DeviceFactory(client=client)
 
-    client = hnap.soapclient.SoapClient(
-        hostname=entry.data[CONF_HOST],
-        password=entry.data[CONF_PASSWORD],
-        username=entry.data[CONF_USERNAME],
+    hass.data[DOMAIN][entry.entry_id] = await hass.async_add_executor_job(get_api)
+
+    await hass.config_entries.async_forward_entry_setups(
+        entry, entry.data[CONF_PLATFORMS]
     )
-    await hass.async_add_executor_job(client.authenticate)
 
-    # Save device api
-    hass.data[DOMAIN][platform][entry.entry_id] = m[platform](client=client)
-
-    # Setup platforms
-    hass.config_entries.async_setup_platforms(entry, entry.data[CONF_PLATFORMS])
-
-    # Register service
     async def _handle_service_call(call):
         nonlocal hass
         await handle_service_call(hass, call)
@@ -74,13 +62,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
 
-    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unloaded = await hass.config_entries.async_unload_platforms(
+        entry, entry.data[CONF_PLATFORMS]
+    )
 
-    if unload_ok:
-        for platform in entry.data[CONF_PLATFORMS]:
-            hass.data[DOMAIN][platform].pop(entry.entry_id)
+    if unloaded:
+        hass.data[DOMAIN].pop(entry.entry_id)
 
-    return unload_ok
+    return unloaded
+
+
+async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    await async_unload_entry(hass, entry)
+    await async_setup_entry(hass, entry)
 
 
 async def handle_service_call(hass: HomeAssistant, call: ServiceCall) -> None:

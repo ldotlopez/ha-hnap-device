@@ -20,6 +20,7 @@
 
 """Siren sensor for HNAP device integration."""
 
+import logging
 from typing import Optional
 
 import hnap
@@ -37,16 +38,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
-from . import _LOGGER
 from .const import DOMAIN, PLATFORM_SIREN
-from .hnap_entity import HNapEntity
+from .entity import HNapEntity
 
 PLATFORM = PLATFORM_SIREN
+_LOGGER = logging.getLogger(__name__)
 
 
 class HNAPSiren(HNapEntity, SirenEntity):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs, name="siren")
         self._attr_is_on = False
         self._attr_supported_features = (
             SUPPORT_TURN_ON
@@ -55,13 +56,13 @@ class HNAPSiren(HNapEntity, SirenEntity):
             | SUPPORT_DURATION
             | SUPPORT_VOLUME_SET
         )
-        self._attr_available_tones = {
-            x.name.lower().replace("_", "-"): x.value for x in hnap.SirenSound
-        }
+        self._attr_available_tones = [
+            x.name.lower().replace("_", "-") for x in hnap.SirenSound
+        ]
 
     def update(self):
         try:
-            self._attr_is_on = self.device.is_playing()
+            self._attr_is_on = self._api.is_playing()
 
         except requests.exceptions.ConnectionError as e:
             _LOGGER.error(e)
@@ -72,14 +73,14 @@ class HNAPSiren(HNapEntity, SirenEntity):
             self.hnap_update_success()
 
     def turn_on(self, volume_level=1, duration=15, tone="police") -> None:
-        self.device.play(
+        self._api.play(
             sound=hnap.SirenSound.fromstring(tone),
             volume=int(volume_level * 100),
             duration=duration,
         )
 
     def turn_off(self) -> None:
-        self.device.stop()
+        self._api.stop()
 
 
 async def async_setup_entry(
@@ -88,15 +89,15 @@ async def async_setup_entry(
     add_entities: AddEntitiesCallback,
     discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
 ):
-    device = hass.data[DOMAIN][PLATFORM][config_entry.entry_id]
-    device_info = await hass.async_add_executor_job(device.client.device_info)
+    api = hass.data[DOMAIN][config_entry.entry_id]
+    device_info = await hass.async_add_executor_job(api.client.device_info)
 
     add_entities(
         [
             HNAPSiren(
-                unique_id=config_entry.entry_id,
+                unique_id=f"{config_entry.entry_id}-{PLATFORM}",
                 device_info=device_info,
-                device=device,
+                api=api,
             )
         ],
         update_before_add=True,

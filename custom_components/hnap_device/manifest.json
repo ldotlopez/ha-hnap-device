@@ -1,16 +1,25 @@
 {
-  "domain": "hnap_device",
-  "name": "HNAP device",
-  "config_flow": true,
-  "documentation": "https://github.com/ldotlopez/ha-hnap-device",
-  "issue_tracker": "https://github.com/ldotlopez/ha-hnap-device/issues",
-  "requirements": [
-    "hnap>=1.0.0,<2.0.0"
-  ],
-  "dependencies": [],
-  "codeowners": [
-    "@ldotlopez"
-  ],
-  "iot_class": "local_polling",
-  "version": "1.0.0"
+   "domain" : "hnap_device",
+   "name" : "HNAP device",
+   "codeowners" : [
+      "@ldotlopez"
+   ],
+   "config_flow" : true,
+   "dependencies" : [],
+   "dhcp" : [
+      {
+         "hostname" : "c200_*",
+         "macaddress" : "000AEB*"
+      }
+   ],
+   "documentation" : "https://github.com/ldotlopez/ha-hnap-device",
+   "homekit" : {},
+   "iot_class" : "local_polling",
+   "issue_tracker" : "https://github.com/ldotlopez/ha-hnap-device/issues",
+   "requirements" : [
+      "hnap>=1.0.0,<2.0.0"
+   ],
+   "ssdp" : [],
+   "version" : "1.0.0",
+   "zeroconf" : []
 }

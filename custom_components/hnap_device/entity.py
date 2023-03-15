@@ -18,32 +18,48 @@
 # USA.
 
 
+from homeassistant.helpers.entity import DeviceInfo
+
+from hnap import Device as HNapDevice
 import time
 
-from . import _LOGGER
 from .const import MAX_FAILURES_BEFORE_UNAVAILABLE, MAX_UPTIME_BEFORE_REBOOT
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class HNapEntity:
-    def __init__(self, *args, unique_id, device_info, device, **kwargs):
+    def __init__(
+        self,
+        *args,
+        unique_id: str,
+        device_info: dict[str, str],
+        api: HNapDevice,
+        name: str,
+        **kwargs
+    ):
         super().__init__(*args, **kwargs)
 
         self._attr_unique_id = unique_id
-        self._attr_device_info = {
-            "connections": {
-                (CONNECTION_NETWORK_MAC, device_info["DeviceMacId"]),
-            },
-            "identifiers": {
-                (CONNECTION_NETWORK_MAC, device_info["DeviceMacId"]),
-            },
-            "manufacturer": device_info["VendorName"],
-            "model": device_info["ModelName"],
-            "name": device_info["DeviceName"],
-        }
-        self._attr_name = self._attr_device_info["name"]
 
-        self.device = device
+        self._attr_device_info = DeviceInfo(
+            identifiers={
+                ("mac", device_info["DeviceMacId"]),
+            },
+            manufacturer=device_info["VendorName"],
+            model=device_info["ModelName"],
+            name=device_info["DeviceName"],
+        )
+
+        self._attr_name = name.capitalize()
+        self._attr_has_entity_name = True
+
+        self._attr_entity_registry_visible_default = True
+        self._attr_entity_registry_enabled_default = True
+
+        self._api = api
 
         self._consecutive_failures = 0
         self._boot_ts = time.monotonic()
