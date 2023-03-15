@@ -36,7 +36,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN] = hass.data.get(DOMAIN, {})
 
-    def get_api():
+    def get_device():
         client = hnap.soapclient.SoapClient(
             hostname=entry.data[CONF_HOST],
             password=entry.data[CONF_PASSWORD],
@@ -44,7 +44,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
         return hnap.DeviceFactory(client=client)
 
-    hass.data[DOMAIN][entry.entry_id] = await hass.async_add_executor_job(get_api)
+    def get_device_info(device):
+        return device.client.device_info()
+
+    device = await hass.async_add_executor_job(get_device)
+    device_info = await hass.async_add_executor_job(get_device_info, device)
+
+    hass.data[DOMAIN][entry.entry_id] = device, device_info
 
     await hass.config_entries.async_forward_entry_setups(
         entry, entry.data[CONF_PLATFORMS]

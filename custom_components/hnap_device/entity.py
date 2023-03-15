@@ -18,31 +18,37 @@
 # USA.
 
 
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity import DeviceInfo, Entity
 
 from hnap import Device as HNapDevice
 import time
 
+from homeassistant.helpers.entity_registry import slugify
+
 from .const import MAX_FAILURES_BEFORE_UNAVAILABLE, MAX_UPTIME_BEFORE_REBOOT
-from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 import logging
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class HNapEntity:
+class HNapEntity(Entity):
     def __init__(
         self,
         *args,
+        domain: str,
         unique_id: str,
         device_info: dict[str, str],
-        api: HNapDevice,
+        device: HNapDevice,
         name: str,
-        **kwargs
+        auto_reboot=True,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
 
         self._attr_unique_id = unique_id
+
+        part = slugify(f"{device_info['DeviceName']}_{name}")
+        self._attr_entity_id = f"{domain}.{part}"
 
         self._attr_device_info = DeviceInfo(
             identifiers={
@@ -59,23 +65,25 @@ class HNapEntity:
         self._attr_entity_registry_visible_default = True
         self._attr_entity_registry_enabled_default = True
 
-        self._api = api
+        self.device = device
 
         self._consecutive_failures = 0
         self._boot_ts = time.monotonic()
+        self._auto_reboot = auto_reboot
 
     def hnap_update_success(self):
         self._consecutive_failures = 0
 
-        # Automatic reboot is still experimental
-        #
-        # uptime = time.monotonic() - self._boot_ts
-        # _LOGGER.debug(f"Device uptime: {uptime:.2f}/{MAX_UPTIME_BEFORE_REBOOT}")
+        if self._auto_reboot:
+            uptime = time.monotonic() - self._boot_ts
+            _LOGGER.debug(
+                f"{self.entity_id}: device uptime {uptime:.2f}s / {MAX_UPTIME_BEFORE_REBOOT}s"
+            )
 
-        # if self.available and uptime > MAX_UPTIME_BEFORE_REBOOT:
-        #     _LOGGER.debug("Device must be rebooted")
-        #     self.device.client.call("Reboot")
-        #     self._boot_ts = time.monotonic()
+            if self.available and uptime > MAX_UPTIME_BEFORE_REBOOT:
+                _LOGGER.debug("Device must be rebooted")
+                self.device.client.call("Reboot")
+                self._boot_ts = time.monotonic()
 
     def hnap_update_failure(self):
         self._consecutive_failures = self._consecutive_failures + 1

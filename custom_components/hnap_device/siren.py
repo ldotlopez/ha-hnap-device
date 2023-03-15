@@ -38,16 +38,17 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
-from .const import DOMAIN, PLATFORM_SIREN
+from .const import CONF_AUTO_REBOOT, DOMAIN, PLATFORM_SIREN
 from .entity import HNapEntity
 
 PLATFORM = PLATFORM_SIREN
+SIREN_DOMAIN = "siren"
 _LOGGER = logging.getLogger(__name__)
 
 
 class HNAPSiren(HNapEntity, SirenEntity):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, name="siren")
+        super().__init__(*args, **kwargs, name="siren", domain=SIREN_DOMAIN)
         self._attr_is_on = False
         self._attr_supported_features = (
             SUPPORT_TURN_ON
@@ -62,7 +63,7 @@ class HNAPSiren(HNapEntity, SirenEntity):
 
     def update(self):
         try:
-            self._attr_is_on = self._api.is_playing()
+            self._attr_is_on = self.device.is_playing()
 
         except requests.exceptions.ConnectionError as e:
             _LOGGER.error(e)
@@ -73,14 +74,14 @@ class HNAPSiren(HNapEntity, SirenEntity):
             self.hnap_update_success()
 
     def turn_on(self, volume_level=1, duration=15, tone="police") -> None:
-        self._api.play(
+        self.device.play(
             sound=hnap.SirenSound.fromstring(tone),
             volume=int(volume_level * 100),
             duration=duration,
         )
 
     def turn_off(self) -> None:
-        self._api.stop()
+        self.device.stop()
 
 
 async def async_setup_entry(
@@ -89,15 +90,16 @@ async def async_setup_entry(
     add_entities: AddEntitiesCallback,
     discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
 ):
-    api = hass.data[DOMAIN][config_entry.entry_id]
-    device_info = await hass.async_add_executor_job(api.client.device_info)
+    device = hass.data[DOMAIN][config_entry.entry_id]
+    device, device_info = hass.data[DOMAIN][config_entry.entry_id]
 
     add_entities(
         [
             HNAPSiren(
                 unique_id=f"{config_entry.entry_id}-{PLATFORM}",
                 device_info=device_info,
-                api=api,
+                device=device,
+                auto_reboot=config_entry.data[CONF_AUTO_REBOOT],
             )
         ],
         update_before_add=True,

@@ -33,24 +33,23 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
-
-from .const import DOMAIN, PLATFORM_BINARY_SENSOR
+from .const import CONF_AUTO_REBOOT, DOMAIN, PLATFORM_BINARY_SENSOR
 from .entity import HNapEntity
 
 PLATFORM = PLATFORM_BINARY_SENSOR
-
+SENSOR_DOMAIN = "sensor"
 _LOGGER = logging.getLogger(__name__)
 
 
 class HNAPMotion(HNapEntity, BinarySensorEntity):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, name="motion")
+        super().__init__(*args, **kwargs, name="motion", domain=SENSOR_DOMAIN)
 
         self._attr_device_class = BinarySensorDeviceClass.MOTION
 
     def update(self):
         try:
-            self._attr_is_on = self._api.is_active()
+            self._attr_is_on = self.device.is_active()
             self.hnap_update_success()
 
         except (
@@ -68,15 +67,15 @@ async def async_setup_entry(
     add_entities: AddEntitiesCallback,
     discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
 ):
-    api = hass.data[DOMAIN][config_entry.entry_id]
-    device_info = await hass.async_add_executor_job(api.client.device_info)
+    device, device_info = hass.data[DOMAIN][config_entry.entry_id]
 
     add_entities(
         [
             HNAPMotion(
                 unique_id=f"{config_entry.entry_id}-{PLATFORM}",
                 device_info=device_info,
-                api=api,
+                device=device,
+                auto_reboot=config_entry.data[CONF_AUTO_REBOOT],
             )
         ],
         update_before_add=True,

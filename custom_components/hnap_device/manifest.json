@@ -7,10 +7,6 @@
    "config_flow" : true,
    "dependencies" : [],
    "dhcp" : [
-      {
-         "hostname" : "c200_*",
-         "macaddress" : "000AEB*"
-      }
    ],
    "documentation" : "https://github.com/ldotlopez/ha-hnap-device",
    "homekit" : {},

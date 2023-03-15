@@ -40,6 +40,8 @@ from .const import (
     PLATFORM_CAMERA,
     PLATFORM_SIREN,
     DEFAULT_USERNAME,
+    CONF_AUTO_REBOOT,
+    DEFAULT_AUTO_REBOOT,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -49,6 +51,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_HOST): str,
         vol.Required(CONF_USERNAME, default=DEFAULT_USERNAME): str,
         vol.Required(CONF_PASSWORD): str,
+        vol.Required(CONF_AUTO_REBOOT, default=DEFAULT_AUTO_REBOOT): bool,
     }
 )
 
@@ -94,6 +97,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
         CONF_PASSWORD: data[CONF_PASSWORD],
         CONF_USERNAME: data[CONF_USERNAME],
         CONF_PLATFORMS: platforms,
+        CONF_AUTO_REBOOT: data[CONF_AUTO_REBOOT],
     }
 
 
