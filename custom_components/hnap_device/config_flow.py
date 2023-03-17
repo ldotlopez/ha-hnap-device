@@ -19,6 +19,7 @@
 
 
 """Config flow for HNAP device integration."""
+from __future__ import annotations
 
 import functools
 import logging
@@ -28,20 +29,24 @@ import hnap.soapclient
 import requests
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_NAME, CONF_HOST, CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import HomeAssistant
+from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.schema_config_entry_flow import (
+    SchemaFlowFormStep,
+    SchemaOptionsFlowHandler,
+)
 
 from .const import (
+    CONF_AUTO_REBOOT,
     CONF_PLATFORMS,
+    DEFAULT_AUTO_REBOOT,
+    DEFAULT_USERNAME,
     DOMAIN,
     PLATFORM_BINARY_SENSOR,
     PLATFORM_CAMERA,
     PLATFORM_SIREN,
-    DEFAULT_USERNAME,
-    CONF_AUTO_REBOOT,
-    DEFAULT_AUTO_REBOOT,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -51,9 +56,18 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_HOST): str,
         vol.Required(CONF_USERNAME, default=DEFAULT_USERNAME): str,
         vol.Required(CONF_PASSWORD): str,
+    }
+)
+
+OPTIONS_SCHEMA = vol.Schema(
+    {
         vol.Required(CONF_AUTO_REBOOT, default=DEFAULT_AUTO_REBOOT): bool,
     }
 )
+
+OPTIONS_FLOW = {
+    "init": SchemaFlowFormStep(OPTIONS_SCHEMA),
+}
 
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
@@ -97,7 +111,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
         CONF_PASSWORD: data[CONF_PASSWORD],
         CONF_USERNAME: data[CONF_USERNAME],
         CONF_PLATFORMS: platforms,
-        CONF_AUTO_REBOOT: data[CONF_AUTO_REBOOT],
+        CONF_AUTO_REBOOT: DEFAULT_AUTO_REBOOT,
     }
 
 
@@ -134,6 +148,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> SchemaOptionsFlowHandler:
+        return SchemaOptionsFlowHandler(config_entry, OPTIONS_FLOW)
 
 
 class CannotConnect(HomeAssistantError):

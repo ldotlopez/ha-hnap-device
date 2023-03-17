@@ -14,7 +14,15 @@
                 "data": {
                     "host": "Host",
                     "password": "Password",
-                    "username": "Username",
+                    "username": "Username"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
                     "auto_reboot": "Reboot device each 12 hours"
                 }
             }
