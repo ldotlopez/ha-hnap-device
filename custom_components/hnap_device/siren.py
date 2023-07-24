@@ -25,14 +25,9 @@ from typing import Optional
 
 import hnap
 import requests.exceptions
-from homeassistant.components.siren import (
-    SUPPORT_DURATION,
-    SUPPORT_TONES,
-    SUPPORT_TURN_OFF,
-    SUPPORT_TURN_ON,
-    SUPPORT_VOLUME_SET,
-    SirenEntity,
-)
+from homeassistant.components.siren import (SUPPORT_DURATION, SUPPORT_TONES,
+                                            SUPPORT_TURN_OFF, SUPPORT_TURN_ON,
+                                            SUPPORT_VOLUME_SET, SirenEntity)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -99,7 +94,8 @@ async def async_setup_entry(
                 unique_id=f"{config_entry.entry_id}-{PLATFORM}",
                 device_info=device_info,
                 device=device,
-                auto_reboot=config_entry.options[CONF_AUTO_REBOOT],
+                # FIXME: upgrade config version
+                auto_reboot=config_entry.options.get(CONF_AUTO_REBOOT, False),
             )
         ],
         update_before_add=True,
