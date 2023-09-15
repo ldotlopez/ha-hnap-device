@@ -11,6 +11,11 @@ types-requests = "*"
 requests = "*"
 ipdb = "*"
 ipython = "*"
+black = "*"
+isort = "*"
+pre-commit = "*"
+pyupgrade = "*"
+mypy = "*"
 
 [requires]
 python_version = "3"

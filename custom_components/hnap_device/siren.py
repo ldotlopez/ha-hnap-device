@@ -82,6 +82,7 @@ class HNAPSiren(HNapEntity, SirenEntity):
 
     def turn_off(self) -> None:
         self.device.stop()
+        self.update()
 
 
 async def async_setup_entry(

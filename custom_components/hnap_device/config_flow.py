@@ -23,39 +23,39 @@ from __future__ import annotations
 
 import functools
 import logging
+import os
 from typing import Any
 
 import hnap.soapclient
 import requests
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import (CONF_HOST, CONF_NAME, CONF_PASSWORD,
+                                 CONF_USERNAME)
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.schema_config_entry_flow import (
-    SchemaFlowFormStep,
-    SchemaOptionsFlowHandler,
-)
+    SchemaFlowFormStep, SchemaOptionsFlowHandler)
 
-from .const import (
-    CONF_AUTO_REBOOT,
-    CONF_PLATFORMS,
-    DEFAULT_AUTO_REBOOT,
-    DEFAULT_USERNAME,
-    DOMAIN,
-    PLATFORM_BINARY_SENSOR,
-    PLATFORM_CAMERA,
-    PLATFORM_SIREN,
-)
+from .const import (CONF_AUTO_REBOOT, CONF_PLATFORMS, DEFAULT_AUTO_REBOOT,
+                    DEFAULT_USERNAME, DOMAIN, PLATFORM_BINARY_SENSOR,
+                    PLATFORM_CAMERA, PLATFORM_SIREN)
 
 _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_HOST): str,
-        vol.Required(CONF_USERNAME, default=DEFAULT_USERNAME): str,
-        vol.Required(CONF_PASSWORD): str,
+        vol.Required(
+            CONF_HOST, default=os.environ.get("HASS_HNAP_DEVICE_HOST", "")
+        ): str,
+        vol.Required(
+            CONF_USERNAME,
+            default=os.environ.get("HASS_HNAP_DEVICE_USERNAME", DEFAULT_USERNAME),
+        ): str,
+        vol.Required(
+            CONF_PASSWORD, default=os.environ.get("HASS_HNAP_DEVICE_PASSWORD", "")
+        ): str,
     }
 )
 
