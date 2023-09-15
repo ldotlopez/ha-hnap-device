@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2021 Luis López <luis@cuarentaydos.com>
 #
@@ -30,17 +29,25 @@ import hnap.soapclient
 import requests
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import (CONF_HOST, CONF_NAME, CONF_PASSWORD,
-                                 CONF_USERNAME)
+from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.schema_config_entry_flow import (
-    SchemaFlowFormStep, SchemaOptionsFlowHandler)
+    SchemaFlowFormStep,
+    SchemaOptionsFlowHandler,
+)
 
-from .const import (CONF_AUTO_REBOOT, CONF_PLATFORMS, DEFAULT_AUTO_REBOOT,
-                    DEFAULT_USERNAME, DOMAIN, PLATFORM_BINARY_SENSOR,
-                    PLATFORM_CAMERA, PLATFORM_SIREN)
+from .const import (
+    CONF_AUTO_REBOOT,
+    CONF_PLATFORMS,
+    DEFAULT_AUTO_REBOOT,
+    DEFAULT_USERNAME,
+    DOMAIN,
+    PLATFORM_BINARY_SENSOR,
+    PLATFORM_CAMERA,
+    PLATFORM_SIREN,
+)
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2021 Luis López <luis@cuarentaydos.com>
 #
@@ -18,15 +17,14 @@
 # USA.
 
 
-from homeassistant.helpers.entity import DeviceInfo, Entity
-
-from hnap import Device as HNapDevice
+import logging
 import time
 
+from hnap import Device as HNapDevice
+from homeassistant.helpers.entity import DeviceInfo, Entity
 from homeassistant.helpers.entity_registry import slugify
 
 from .const import MAX_FAILURES_BEFORE_UNAVAILABLE, MAX_UPTIME_BEFORE_REBOOT
-import logging
 
 _LOGGER = logging.getLogger(__name__)
 

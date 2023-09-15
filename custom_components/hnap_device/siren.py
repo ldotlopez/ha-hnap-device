@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2021 Luis López <luis@cuarentaydos.com>
 #
@@ -89,7 +88,7 @@ async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     add_entities: AddEntitiesCallback,
-    discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
+    discovery_info: DiscoveryInfoType | None = None,  # noqa DiscoveryInfoType | None
 ):
     device = hass.data[DOMAIN][config_entry.entry_id]
     device, device_info = hass.data[DOMAIN][config_entry.entry_id]
@@ -100,7 +99,8 @@ async def async_setup_entry(
                 unique_id=f"{config_entry.entry_id}-{PLATFORM}",
                 device_info=device_info,
                 device=device,
-                auto_reboot=config_entry.options[CONF_AUTO_REBOOT],
+                # FIXME: upgrade config version
+                auto_reboot=config_entry.options.get(CONF_AUTO_REBOOT, False),
             )
         ],
         update_before_add=True,

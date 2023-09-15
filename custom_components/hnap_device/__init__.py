@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2021 Luis López <luis@cuarentaydos.com>
 #
@@ -87,7 +86,7 @@ async def handle_service_call(hass: HomeAssistant, call: ServiceCall) -> None:
     config_ids = await service.async_extract_config_entry_ids(hass, call)
 
     for platform in hass.data[DOMAIN]:
-        for (config_id, obj) in hass.data[DOMAIN][platform].items():
+        for config_id, obj in hass.data[DOMAIN][platform].items():
             if config_id in config_ids:
                 fn = functools.partial(
                     _execute_hnap_call,
@@ -99,7 +98,7 @@ async def handle_service_call(hass: HomeAssistant, call: ServiceCall) -> None:
 
 
 def _execute_hnap_call(
-    target: hnap.devices.Device, method: str, **parameters: Dict[str, str]
+    target: hnap.devices.Device, method: str, **parameters: dict[str, str]
 ) -> None:
     resp = target.client.call(method, **parameters)
     _LOGGER.debug(f"{target}.{method}({parameters}) = {resp}")

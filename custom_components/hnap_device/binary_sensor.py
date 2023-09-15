@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2021 Luis López <luis@cuarentaydos.com>
 #
@@ -65,7 +64,7 @@ async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     add_entities: AddEntitiesCallback,
-    discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
+    discovery_info: DiscoveryInfoType | None = None,  # noqa DiscoveryInfoType | None
 ):
     device, device_info = hass.data[DOMAIN][config_entry.entry_id]
 

@@ -6,16 +6,17 @@ name = "pypi"
 [packages]
 
 [dev-packages]
+black = "*"
+build = "*"
 homeassistant = "*"
-types-requests = "*"
-requests = "*"
 ipdb = "*"
 ipython = "*"
-black = "*"
 isort = "*"
+mypy = "*"
 pre-commit = "*"
 pyupgrade = "*"
-mypy = "*"
+requests = "*"
+types-requests = "*"
 
 [requires]
 python_version = "3"

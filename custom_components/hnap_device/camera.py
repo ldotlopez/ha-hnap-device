@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2021 Luis López <luis@cuarentaydos.com>
 #
@@ -41,7 +40,7 @@ class HNAPCamera(HNapEntity, Camera):
 
         self._attr_supported_features = SUPPORT_STREAM
 
-    async def stream_source(self) -> Optional[str]:
+    async def stream_source(self) -> str | None:
         return self.device.stream_url
 
 
@@ -49,7 +48,7 @@ async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     add_entities: AddEntitiesCallback,
-    discovery_info: Optional[DiscoveryInfoType] = None,  # noqa DiscoveryInfoType | None
+    discovery_info: DiscoveryInfoType | None = None,  # noqa DiscoveryInfoType | None
 ):
     _LOGGER.error("camera support is not implemented yet")
     return
