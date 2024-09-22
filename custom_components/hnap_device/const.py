@@ -19,13 +19,14 @@
 
 """Constants for HNAP device integration."""
 
-DOMAIN = "hnap_device"
+
+CONF_AUTO_REBOOT = "auto_reboot"
 CONF_PLATFORMS = "platforms"
-PLATFORM_CAMERA = "camera"
-PLATFORM_BINARY_SENSOR = "binary_sensor"
-PLATFORM_SIREN = "siren"
+DEFAULT_AUTO_REBOOT = False
+DEFAULT_USERNAME = "admin"
+DOMAIN = "hnap_device"
 MAX_FAILURES_BEFORE_UNAVAILABLE = 3
 MAX_UPTIME_BEFORE_REBOOT = 60 * 60 * 12  # 12 hours
-DEFAULT_USERNAME = "admin"
-DEFAULT_AUTO_REBOOT = False
-CONF_AUTO_REBOOT = "auto_reboot"
+PLATFORM_BINARY_SENSOR = "binary_sensor"
+PLATFORM_CAMERA = "camera"
+PLATFORM_SIREN = "siren"

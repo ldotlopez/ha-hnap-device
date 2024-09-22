@@ -20,7 +20,6 @@
 """Siren sensor for HNAP device integration."""
 
 import logging
-from typing import Optional
 
 import hnap
 import requests.exceptions
@@ -46,7 +45,11 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class HNAPSiren(HNapEntity, SirenEntity):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs, name="siren", domain=SIREN_DOMAIN)
         self._attr_is_on = False
         self._attr_supported_features = (
@@ -72,7 +75,9 @@ class HNAPSiren(HNapEntity, SirenEntity):
         else:
             self.hnap_update_success()
 
-    def turn_on(self, volume_level=1, duration=15, tone="police") -> None:
+    def turn_on(
+        self, volume_level: float = 1.0, duration: int = 15, tone: str = "police"
+    ) -> None:
         self.device.play(
             sound=hnap.SirenSound.fromstring(tone),
             volume=int(volume_level * 100),

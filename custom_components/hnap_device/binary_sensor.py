@@ -19,7 +19,6 @@
 """Binary sensor for HNAP device integration."""
 
 import logging
-from typing import Optional
 
 import hnap
 import requests.exceptions
@@ -74,7 +73,7 @@ async def async_setup_entry(
                 unique_id=f"{config_entry.entry_id}-{PLATFORM}",
                 device_info=device_info,
                 device=device,
-                auto_reboot=config_entry.options[CONF_AUTO_REBOOT],
+                auto_reboot=config_entry.options.get(CONF_AUTO_REBOOT, True),
             )
         ],
         update_before_add=True,

@@ -1,11 +1,11 @@
 {
-    "options": {
-        "step": {
-            "init": {
-                "data": {
-                    "auto_reboot": "Reiniciar el dispositivo cada 12 horas"
-                }
-            }
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "auto_reboot": "Reiniciar el dispositivo cada 12 horas"
         }
+      }
     }
+  }
 }

@@ -75,7 +75,8 @@ class HNapEntity(Entity):
         if self._auto_reboot:
             uptime = time.monotonic() - self._boot_ts
             _LOGGER.debug(
-                f"{self.entity_id}: device uptime {uptime:.2f}s / {MAX_UPTIME_BEFORE_REBOOT}s"
+                f"{self.entity_id}: device uptime {uptime:.2f}s "
+                + f"/ {MAX_UPTIME_BEFORE_REBOOT}s"
             )
 
             if self.available and uptime > MAX_UPTIME_BEFORE_REBOOT:
