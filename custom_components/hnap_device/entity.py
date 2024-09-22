@@ -45,7 +45,7 @@ class HNapEntity(Entity):
 
         self._attr_unique_id = unique_id
 
-        part = slugify(f"{device_info['DeviceName']}_{name}")
+        part = slugify(name)
         self._attr_entity_id = f"{domain}.{part}"
 
         self._attr_device_info = DeviceInfo(

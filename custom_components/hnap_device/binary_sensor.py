@@ -41,8 +41,7 @@ _LOGGER = logging.getLogger(__name__)
 
 class HNAPMotion(HNapEntity, BinarySensorEntity):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, name="motion", domain=SENSOR_DOMAIN)
-
+        super().__init__(*args, **kwargs, domain=SENSOR_DOMAIN)
         self._attr_device_class = BinarySensorDeviceClass.MOTION
 
     def update(self):
@@ -73,6 +72,7 @@ async def async_setup_entry(
                 unique_id=f"{config_entry.entry_id}-{PLATFORM}",
                 device_info=device_info,
                 device=device,
+                name=f"{device_info['ModelName']} motion",
                 auto_reboot=config_entry.options.get(CONF_AUTO_REBOOT, True),
             )
         ],
