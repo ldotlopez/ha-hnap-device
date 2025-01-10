@@ -23,23 +23,22 @@ import logging
 
 import hnap
 import requests.exceptions
-from homeassistant.components.siren import (
-    SUPPORT_DURATION,
-    SUPPORT_TONES,
-    SUPPORT_TURN_OFF,
-    SUPPORT_TURN_ON,
-    SUPPORT_VOLUME_SET,
-    SirenEntity,
-)
+from homeassistant.components.siren import SirenEntity, SirenEntityFeature
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
-from .const import CONF_AUTO_REBOOT, DOMAIN, PLATFORM_SIREN
+from .const import (
+    CONF_AUTO_REBOOT,
+    DEFAULT_SIREN_DURATION,
+    DEFAULT_SIREN_TONE,
+    DEFAULT_SIREN_VOLUME,
+    DOMAIN,
+)
 from .entity import HNapEntity
 
-PLATFORM = PLATFORM_SIREN
 SIREN_DOMAIN = "siren"
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,11 +52,11 @@ class HNAPSiren(HNapEntity, SirenEntity):
         super().__init__(*args, **kwargs, name="siren", domain=SIREN_DOMAIN)
         self._attr_is_on = False
         self._attr_supported_features = (
-            SUPPORT_TURN_ON
-            | SUPPORT_TURN_OFF
-            | SUPPORT_TONES
-            | SUPPORT_DURATION
-            | SUPPORT_VOLUME_SET
+            SirenEntityFeature.TURN_ON
+            | SirenEntityFeature.TURN_OFF
+            | SirenEntityFeature.TONES
+            | SirenEntityFeature.DURATION
+            | SirenEntityFeature.VOLUME_SET
         )
         self._attr_available_tones = [
             x.name.lower().replace("_", "-") for x in hnap.SirenSound
@@ -76,7 +75,11 @@ class HNAPSiren(HNapEntity, SirenEntity):
             self.hnap_update_success()
 
     def turn_on(
-        self, volume_level: float = 1.0, duration: int = 15, tone: str = "police"
+        self,
+        volume_level: float = DEFAULT_SIREN_VOLUME,
+        duration: int = DEFAULT_SIREN_DURATION,
+        tone: str = DEFAULT_SIREN_TONE,
+        **kwargs,
     ) -> None:
         self.device.play(
             sound=hnap.SirenSound.fromstring(tone),
@@ -84,7 +87,7 @@ class HNAPSiren(HNapEntity, SirenEntity):
             duration=duration,
         )
 
-    def turn_off(self) -> None:
+    def turn_off(self, **kwargs) -> None:
         self.device.stop()
         self.update()
 
@@ -101,7 +104,7 @@ async def async_setup_entry(
     add_entities(
         [
             HNAPSiren(
-                unique_id=f"{config_entry.entry_id}-{PLATFORM}",
+                unique_id=f"{config_entry.entry_id}-{Platform.SIREN}",
                 device_info=device_info,
                 device=device,
                 # FIXME: upgrade config version

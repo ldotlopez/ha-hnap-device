@@ -19,14 +19,15 @@
 
 """Constants for HNAP device integration."""
 
+from hnap import SirenSound
 
 CONF_AUTO_REBOOT = "auto_reboot"
 CONF_PLATFORMS = "platforms"
 DEFAULT_AUTO_REBOOT = False
+DEFAULT_SIREN_DURATION = 15
+DEFAULT_SIREN_TONE = SirenSound.POLICE.name.lower()
+DEFAULT_SIREN_VOLUME = 1.0
 DEFAULT_USERNAME = "admin"
 DOMAIN = "hnap_device"
 MAX_FAILURES_BEFORE_UNAVAILABLE = 3
 MAX_UPTIME_BEFORE_REBOOT = 60 * 60 * 12  # 12 hours
-PLATFORM_BINARY_SENSOR = "binary_sensor"
-PLATFORM_CAMERA = "camera"
-PLATFORM_SIREN = "siren"
