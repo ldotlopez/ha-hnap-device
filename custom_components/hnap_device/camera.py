@@ -19,19 +19,17 @@
 """Binary sensor for HNAP device integration."""
 
 import logging
-from typing import Optional
 
 from homeassistant.components.camera import SUPPORT_STREAM, Camera
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
-from .const import DOMAIN, PLATFORM_CAMERA
 from .entity import HNapEntity
 
 _LOGGER = logging.getLogger(__name__)
-PLATFORM = PLATFORM_CAMERA
 
 
 class HNAPCamera(HNapEntity, Camera):

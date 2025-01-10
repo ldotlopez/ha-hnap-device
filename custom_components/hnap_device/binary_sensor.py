@@ -27,14 +27,14 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
-from .const import CONF_AUTO_REBOOT, DOMAIN, PLATFORM_BINARY_SENSOR
+from .const import CONF_AUTO_REBOOT, DOMAIN
 from .entity import HNapEntity
 
-PLATFORM = PLATFORM_BINARY_SENSOR
 SENSOR_DOMAIN = "sensor"
 _LOGGER = logging.getLogger(__name__)
 
@@ -69,7 +69,7 @@ async def async_setup_entry(
     add_entities(
         [
             HNAPMotion(
-                unique_id=f"{config_entry.entry_id}-{PLATFORM}",
+                unique_id=f"{config_entry.entry_id}-{Platform.BINARY_SENSOR}",
                 device_info=device_info,
                 device=device,
                 name=f"{device_info['ModelName']} motion",

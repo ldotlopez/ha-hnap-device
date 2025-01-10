@@ -29,7 +29,13 @@ import hnap.soapclient
 import requests
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_NAME,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+    Platform,
+)
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
@@ -44,9 +50,6 @@ from .const import (
     DEFAULT_AUTO_REBOOT,
     DEFAULT_USERNAME,
     DOMAIN,
-    PLATFORM_BINARY_SENSOR,
-    PLATFORM_CAMERA,
-    PLATFORM_SIREN,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -102,11 +105,11 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     platforms = []
     if isinstance(device, hnap.Camera):
         # 'Optical Recognition', 'Environmental Sensor', 'Camera']
-        platforms.append(PLATFORM_CAMERA)
+        platforms.append(Platform.CAMERA)
     if isinstance(device, hnap.Motion):
-        platforms.append(PLATFORM_BINARY_SENSOR)
+        platforms.append(Platform.BINARY_SENSOR)
     if isinstance(device, hnap.Siren):
-        platforms.append(PLATFORM_SIREN)
+        platforms.append(Platform.SIREN)
 
     if not platforms:
         raise InvalidDeviceType(str(device.__class__))

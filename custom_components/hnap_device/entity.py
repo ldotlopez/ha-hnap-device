@@ -19,6 +19,7 @@
 
 import logging
 import time
+from functools import cached_property
 
 from hnap import Device as HNapDevice
 from homeassistant.helpers.entity import DeviceInfo, Entity
@@ -87,6 +88,6 @@ class HNapEntity(Entity):
     def hnap_update_failure(self):
         self._consecutive_failures = self._consecutive_failures + 1
 
-    @property
+    @cached_property
     def available(self):
         return self._consecutive_failures < MAX_FAILURES_BEFORE_UNAVAILABLE
