@@ -2,8 +2,8 @@
 
 <!-- HomeAssistant badges -->
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-[![hassfest validation](https://github.com/ldotlopez/ha-hnap-device/workflows/Validate%20with%20hassfest/badge.svg)](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hassfest.yml)
-[![HACS validation](https://github.com/ldotlopez/ha-hnap-device/workflows/Validate%20with%20HACS/badge.svg)](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hacs.yml)
+[![Validate with hassfest](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hassfest.yml/badge.svg)](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hassfest.yml)
+[![Validate with HACS](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hacs.yml/badge.svg)](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hacs.yml)
 
 <!-- Code and releases -->
 [![GitHub Release](https://img.shields.io/github/v/release/ldotlopez/ha-hnap-device?include_prereleases)](https://github.com/ldotlopez/ha-hnap-device/releases)
