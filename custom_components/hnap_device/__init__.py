@@ -85,20 +85,10 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 async def handle_service_call(hass: HomeAssistant, call: ServiceCall) -> None:
     config_ids = await service.async_extract_config_entry_ids(hass, call)
 
-    for platform in hass.data[DOMAIN]:
-        for config_id, obj in hass.data[DOMAIN][platform].items():
-            if config_id in config_ids:
-                fn = functools.partial(
-                    _execute_hnap_call,
-                    obj,
-                    call.data["method"],
-                    **call.data.get("parameters", {}),
-                )
-                await hass.async_add_executor_job(fn)
+    for cid, (obj, _) in hass.data[DOMAIN].items():
+        if cid not in config_ids:
+            continue
 
-
-def _execute_hnap_call(
-    target: hnap.devices.Device, method: str, **parameters: dict[str, str]
-) -> None:
-    resp = target.client.call(method, **parameters)
-    _LOGGER.debug(f"{target}.{method}({parameters}) = {resp}")
+        await hass.async_add_executor_job(
+            obj.call, call.data["method"], **call.data.get("parameters", {})
+        )
