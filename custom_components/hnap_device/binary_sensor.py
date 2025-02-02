@@ -32,7 +32,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
-from .const import CONF_AUTO_REBOOT, DOMAIN
+from .const import DOMAIN
 from .entity import HNapEntity
 
 SENSOR_DOMAIN = "sensor"
@@ -46,8 +46,11 @@ class HNAPMotion(HNapEntity, BinarySensorEntity):
 
     def update(self):
         try:
+            if not self.available:
+                self.device.authenticate(force=True)
+
             self._attr_is_on = self.device.is_active()
-            self.hnap_update_success()
+            self._attr_available = True
 
         except (
             hnap.soapclient.MethodCallError,
@@ -55,7 +58,7 @@ class HNAPMotion(HNapEntity, BinarySensorEntity):
         ) as e:
             _LOGGER.error(e)
             self._attr_is_on = None
-            self.hnap_update_failure()
+            self._attr_available = False
 
 
 async def async_setup_entry(
@@ -73,7 +76,6 @@ async def async_setup_entry(
                 device_info=device_info,
                 device=device,
                 name=f"{device_info['ModelName']} motion",
-                auto_reboot=config_entry.options.get(CONF_AUTO_REBOOT, True),
             )
         ],
         update_before_add=True,

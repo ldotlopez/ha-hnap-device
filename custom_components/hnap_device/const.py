@@ -21,9 +21,7 @@
 
 from hnap import SirenSound
 
-CONF_AUTO_REBOOT = "auto_reboot"
 CONF_PLATFORMS = "platforms"
-DEFAULT_AUTO_REBOOT = False
 DEFAULT_SIREN_DURATION = 15
 DEFAULT_SIREN_TONE = SirenSound.POLICE.name.lower()
 DEFAULT_SIREN_VOLUME = 1.0

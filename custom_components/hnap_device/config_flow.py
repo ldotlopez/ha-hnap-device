@@ -44,13 +44,7 @@ from homeassistant.helpers.schema_config_entry_flow import (
     SchemaOptionsFlowHandler,
 )
 
-from .const import (
-    CONF_AUTO_REBOOT,
-    CONF_PLATFORMS,
-    DEFAULT_AUTO_REBOOT,
-    DEFAULT_USERNAME,
-    DOMAIN,
-)
+from .const import CONF_PLATFORMS, DEFAULT_USERNAME, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -68,16 +62,6 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
         ): str,
     }
 )
-
-OPTIONS_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_AUTO_REBOOT, default=DEFAULT_AUTO_REBOOT): bool,
-    }
-)
-
-OPTIONS_FLOW = {
-    "init": SchemaFlowFormStep(OPTIONS_SCHEMA),
-}
 
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
@@ -121,7 +105,6 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
         CONF_PASSWORD: data[CONF_PASSWORD],
         CONF_USERNAME: data[CONF_USERNAME],
         CONF_PLATFORMS: platforms,
-        CONF_AUTO_REBOOT: DEFAULT_AUTO_REBOOT,
     }
 
 
@@ -158,13 +141,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
-
-    @staticmethod
-    @callback
-    def async_get_options_flow(
-        config_entry: config_entries.ConfigEntry,
-    ) -> SchemaOptionsFlowHandler:
-        return SchemaOptionsFlowHandler(config_entry, OPTIONS_FLOW)
 
 
 class CannotConnect(HomeAssistantError):

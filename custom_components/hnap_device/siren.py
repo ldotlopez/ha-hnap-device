@@ -31,7 +31,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import DiscoveryInfoType
 
 from .const import (
-    CONF_AUTO_REBOOT,
     DEFAULT_SIREN_DURATION,
     DEFAULT_SIREN_TONE,
     DEFAULT_SIREN_VOLUME,
@@ -64,15 +63,15 @@ class HNAPSiren(HNapEntity, SirenEntity):
 
     def update(self):
         try:
+            if not self.available:
+                self.device.authenticate(force=True)
             self._attr_is_on = self.device.is_playing()
+            self._attr_available = True
 
         except requests.exceptions.ConnectionError as e:
             _LOGGER.error(e)
             self._attr_is_on = None
-            self.hnap_update_failure()
-
-        else:
-            self.hnap_update_success()
+            self._attr_available = False
 
     def turn_on(
         self,

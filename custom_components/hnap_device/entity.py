@@ -18,14 +18,10 @@
 
 
 import logging
-import time
-from functools import cached_property
 
 from hnap import Device as HNapDevice
 from homeassistant.helpers.entity import DeviceInfo, Entity
 from homeassistant.helpers.entity_registry import slugify
-
-from .const import MAX_FAILURES_BEFORE_UNAVAILABLE, MAX_UPTIME_BEFORE_REBOOT
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -65,29 +61,3 @@ class HNapEntity(Entity):
         self._attr_entity_registry_enabled_default = True
 
         self.device = device
-
-        self._consecutive_failures = 0
-        self._boot_ts = time.monotonic()
-        self._auto_reboot = auto_reboot
-
-    def hnap_update_success(self):
-        self._consecutive_failures = 0
-
-        if self._auto_reboot:
-            uptime = time.monotonic() - self._boot_ts
-            _LOGGER.debug(
-                f"{self.entity_id}: device uptime {uptime:.2f}s "
-                + f"/ {MAX_UPTIME_BEFORE_REBOOT}s"
-            )
-
-            if self.available and uptime > MAX_UPTIME_BEFORE_REBOOT:
-                _LOGGER.debug("Device must be rebooted")
-                self.device.client.call("Reboot")
-                self._boot_ts = time.monotonic()
-
-    def hnap_update_failure(self):
-        self._consecutive_failures = self._consecutive_failures + 1
-
-    @cached_property
-    def available(self):
-        return self._consecutive_failures < MAX_FAILURES_BEFORE_UNAVAILABLE

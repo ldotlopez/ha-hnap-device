@@ -17,9 +17,7 @@
 # USA.
 
 
-import functools
 import logging
-from typing import Dict
 
 import hnap
 from homeassistant.config_entries import ConfigEntry
