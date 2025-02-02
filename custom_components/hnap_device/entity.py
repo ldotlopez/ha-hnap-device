@@ -23,8 +23,6 @@ from hnap import Device as HNapDevice
 from homeassistant.helpers.entity import DeviceInfo, Entity
 from homeassistant.helpers.entity_registry import slugify
 
-_LOGGER = logging.getLogger(__name__)
-
 
 class HNapEntity(Entity):
     def __init__(
@@ -35,7 +33,6 @@ class HNapEntity(Entity):
         device_info: dict[str, str],
         device: HNapDevice,
         name: str,
-        auto_reboot=True,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)

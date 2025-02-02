@@ -106,9 +106,6 @@ async def async_setup_entry(
                 unique_id=f"{config_entry.entry_id}-{Platform.SIREN}",
                 device_info=device_info,
                 device=device,
-                # FIXME: upgrade config version
-                auto_reboot=config_entry.options.get(CONF_AUTO_REBOOT, False),
             )
-        ],
-        update_before_add=True,
+        ]
     )

@@ -44,7 +44,7 @@ class HNAPMotion(HNapEntity, BinarySensorEntity):
         super().__init__(*args, **kwargs, domain=SENSOR_DOMAIN)
         self._attr_device_class = BinarySensorDeviceClass.MOTION
 
-    def update(self):
+    def update(self) -> None:
         try:
             if not self.available:
                 self.device.authenticate(force=True)
@@ -66,7 +66,7 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     add_entities: AddEntitiesCallback,
     discovery_info: DiscoveryInfoType | None = None,  # noqa DiscoveryInfoType | None
-):
+) -> None:
     device, device_info = hass.data[DOMAIN][config_entry.entry_id]
 
     add_entities(
@@ -77,6 +77,5 @@ async def async_setup_entry(
                 device=device,
                 name=f"{device_info['ModelName']} motion",
             )
-        ],
-        update_before_add=True,
+        ]
     )
