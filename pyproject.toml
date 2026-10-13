@@ -4,11 +4,6 @@ version = "1.2.1"
 description ="HomeAssistant integration for HNAP devices"
 readme = "README.md"
 requires-python = ">=3.13.2"
-dependencies = []
-
-#dependencies = [
-#    "importlib-metadata; python_version >= '3.12'",
-#]
 authors = [
   {name = "Luis López", email = "luis@cuarentaydos.com"},
 ]
@@ -19,21 +14,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-
 [project.urls]
 Homepage = "https://github.com/ldotlopez/ha-hnap-device"
 Issues = "https://github.com/ldotlopez/ha-hnap-device/issues"
 Repository = "https://github.com/ldotlopez/ha-hnap-device.git"
-
-
-[tool.black]
-target-version = ['py313']
-
-[tool.isort]
-profile = "black"
-
-[tool.pyupgrade]
-addopts = "--py313-plus"
 
 [dependency-groups]
 dev = [
@@ -48,3 +32,12 @@ dev = [
     # "requests>=2.32.3",
     "types-requests>=2.31.0.6",
 ]
+
+[tool.black]
+target-version = ['py313']
+
+[tool.isort]
+profile = "black"
+
+[tool.pyupgrade]
+addopts = "--py313-plus"
