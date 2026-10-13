@@ -20,13 +20,11 @@
 
 import logging
 
-from homeassistant.components.camera import SUPPORT_STREAM, Camera
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
+from homeassistant.components.camera import Camera, CameraEntityFeature
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import DiscoveryInfoType
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
+from .coordinator import HNapConfigEntry
 from .entity import HNapEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -34,9 +32,10 @@ _LOGGER = logging.getLogger(__name__)
 
 class HNAPCamera(HNapEntity, Camera):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        HNapEntity.__init__(self, *args, **kwargs)
+        Camera.__init__(self)
 
-        self._attr_supported_features = SUPPORT_STREAM
+        self._attr_supported_features = CameraEntityFeature.STREAM
 
     async def stream_source(self) -> str | None:
         return self.device.stream_url
@@ -44,12 +43,10 @@ class HNAPCamera(HNapEntity, Camera):
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
-    add_entities: AddEntitiesCallback,
-    discovery_info: DiscoveryInfoType | None = None,  # noqa DiscoveryInfoType | None
-):
+    config_entry: HNapConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
+) -> None:
     _LOGGER.error("camera support is not implemented yet")
-    return
 
     # api = hass.data[DOMAIN][config_entry.entry_id]
     # device_info = await hass.async_add_executor_job(device.client.device_info)

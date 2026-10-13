@@ -17,44 +17,36 @@
 # USA.
 
 
-import logging
+from typing import Any
 
-from hnap import Device as HNapDevice
-from homeassistant.helpers.entity import DeviceInfo, Entity
-from homeassistant.helpers.entity_registry import slugify
+from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, format_mac
+from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from .coordinator import HNapCoordinator
 
 
-class HNapEntity(Entity):
+class HNapEntity(CoordinatorEntity[HNapCoordinator]):
+    _attr_has_entity_name = True
+
     def __init__(
         self,
-        *args,
-        domain: str,
+        coordinator: HNapCoordinator,
+        *,
         unique_id: str,
         device_info: dict[str, str],
-        device: HNapDevice,
-        name: str,
-        **kwargs,
+        device: Any,
+        name: str | None = None,
     ):
-        super().__init__(*args, **kwargs)
-
+        super().__init__(coordinator)
         self._attr_unique_id = unique_id
-
-        part = slugify(name)
-        self._attr_entity_id = f"{domain}.{part}"
-
+        self._attr_name = name
         self._attr_device_info = DeviceInfo(
-            identifiers={
-                ("mac", device_info["DeviceMacId"]),
+            connections={
+                (CONNECTION_NETWORK_MAC, format_mac(device_info["DeviceMacId"]))
             },
             manufacturer=device_info["VendorName"],
             model=device_info["ModelName"],
             name=device_info["DeviceName"],
         )
-
-        self._attr_name = name.capitalize()
-        self._attr_has_entity_name = True
-
-        self._attr_entity_registry_visible_default = True
-        self._attr_entity_registry_enabled_default = True
-
         self.device = device

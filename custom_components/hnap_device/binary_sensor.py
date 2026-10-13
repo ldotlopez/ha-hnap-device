@@ -18,64 +18,39 @@
 
 """Binary sensor for HNAP device integration."""
 
-import logging
-
-import hnap
-import requests.exceptions
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import DiscoveryInfoType
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import DOMAIN
+from .coordinator import HNapConfigEntry
 from .entity import HNapEntity
-
-SENSOR_DOMAIN = "sensor"
-_LOGGER = logging.getLogger(__name__)
 
 
 class HNAPMotion(HNapEntity, BinarySensorEntity):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, domain=SENSOR_DOMAIN)
-        self._attr_device_class = BinarySensorDeviceClass.MOTION
+    _attr_device_class = BinarySensorDeviceClass.MOTION
 
-    def update(self) -> None:
-        try:
-            if not self.available:
-                self.device.authenticate(force=True)
-
-            self._attr_is_on = self.device.is_active()
-            self._attr_available = True
-
-        except (
-            hnap.soapclient.MethodCallError,
-            requests.exceptions.ConnectionError,
-        ) as e:
-            _LOGGER.error(e)
-            self._attr_is_on = None
-            self._attr_available = False
+    @property
+    def is_on(self) -> bool | None:
+        return self.coordinator.data.get("motion")
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
-    add_entities: AddEntitiesCallback,
-    discovery_info: DiscoveryInfoType | None = None,  # noqa DiscoveryInfoType | None
+    config_entry: HNapConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    device, device_info = hass.data[DOMAIN][config_entry.entry_id]
-
-    add_entities(
+    data = config_entry.runtime_data
+    async_add_entities(
         [
             HNAPMotion(
+                data.coordinator,
                 unique_id=f"{config_entry.entry_id}-{Platform.BINARY_SENSOR}",
-                device_info=device_info,
-                device=device,
-                name=f"{device_info['ModelName']} motion",
+                device_info=data.device_info,
+                device=data.device,
             )
         ]
     )
