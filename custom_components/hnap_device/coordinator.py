@@ -51,19 +51,20 @@ class HNapCoordinator(DataUpdateCoordinator[dict[str, bool]]):
         )
         self.entry = entry
         self.device = device
+        self.device_class = type(device)
         self.connected = False
-        self._has_failed = False
+        self._reconnect_needed = False
 
     def _poll(self) -> tuple[Any, dict[str, bool]]:
         device = self.device
-        if self._has_failed:
+        if self._reconnect_needed:
             client = hnap.soapclient.SoapClient(
                 hostname=self.entry.data[CONF_HOST],
                 password=self.entry.data[CONF_PASSWORD],
                 username=self.entry.data[CONF_USERNAME],
             )
-            device = hnap.DeviceFactory(client=client)
-            device.authenticate(force=True)
+            device = self.device_class(client=client)
+            device.client.authenticate(force=True)
 
         data: dict[str, bool] = {}
         if isinstance(device, hnap.Siren):
@@ -84,7 +85,7 @@ class HNapCoordinator(DataUpdateCoordinator[dict[str, bool]]):
         ) as err:
             if self.connected:
                 _LOGGER.warning("Lost connection to HNAP device; retrying: %s", err)
-            self._has_failed = True
+            self._reconnect_needed = True
             self.connected = False
             async_create_issue(
                 self.hass,
@@ -98,13 +99,13 @@ class HNapCoordinator(DataUpdateCoordinator[dict[str, bool]]):
             raise UpdateFailed(err) from err
 
         self.device = device
-        if self._has_failed:
+        if self._reconnect_needed:
             _LOGGER.info("Connection to HNAP device restored")
             async_delete_issue(
                 self.hass,
                 DOMAIN,
                 f"{ISSUE_CONNECTION_LOST}_{self.entry.entry_id}",
             )
-        self._has_failed = False
+        self._reconnect_needed = False
         self.connected = True
         return result

@@ -37,6 +37,7 @@ from homeassistant.helpers.typing import ConfigType
 
 from .const import CONF_PLATFORMS, DOMAIN, ISSUE_CONNECTION_LOST
 from .coordinator import HNapConfigEntry, HNapCoordinator, HNapData
+from .device import create_device
 
 _LOGGER = logging.getLogger(__name__)
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
@@ -59,8 +60,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: HNapConfigEntry) -> bool
             password=entry.data[CONF_PASSWORD],
             username=entry.data[CONF_USERNAME],
         )
-        device = hnap.DeviceFactory(client=client)
-        return device, device.client.device_info()
+        device_info = client.device_info()
+        return create_device(client, device_info), device_info
 
     try:
         device, device_info = await hass.async_add_executor_job(get_device)

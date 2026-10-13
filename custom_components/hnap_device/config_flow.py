@@ -21,7 +21,6 @@
 
 from __future__ import annotations
 
-import functools
 import logging
 import os
 from collections.abc import Mapping
@@ -44,6 +43,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import format_mac
 
 from .const import CONF_PLATFORMS, DEFAULT_USERNAME, DOMAIN
+from .device import UnsupportedDeviceType, create_device
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -70,14 +70,17 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     user.
     """
 
-    fn = functools.partial(
-        hnap.DeviceFactory,
-        hostname=data[CONF_HOST],
-        password=data[CONF_PASSWORD],
-        username=data[CONF_USERNAME],
-    )
+    def create_configured_device():
+        client = hnap.soapclient.SoapClient(
+            hostname=data[CONF_HOST],
+            password=data[CONF_PASSWORD],
+            username=data[CONF_USERNAME],
+        )
+        info = client.device_info()
+        return create_device(client, info), info
+
     try:
-        device = await hass.async_add_executor_job(fn)
+        device, info = await hass.async_add_executor_job(create_configured_device)
 
     except requests.exceptions.ConnectionError as e:
         raise CannotConnect() from e
@@ -85,18 +88,15 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     except hnap.AuthenticationError as e:
         raise InvalidAuth() from e
 
-    platforms = []
+    except UnsupportedDeviceType as e:
+        raise InvalidDeviceType(str(e)) from e
+
+    platforms = [Platform.BINARY_SENSOR]
     if isinstance(device, hnap.Camera):
-        # 'Optical Recognition', 'Environmental Sensor', 'Camera']
         platforms.append(Platform.CAMERA)
-    platforms.append(Platform.BINARY_SENSOR)
     if isinstance(device, hnap.Siren):
         platforms.append(Platform.SIREN)
 
-    if not platforms:
-        raise InvalidDeviceType(str(device.__class__))
-
-    info = await hass.async_add_executor_job(device.client.device_info)
     return {
         CONF_NAME: info["ModelName"],
         "mac": format_mac(info["DeviceMacId"]),
