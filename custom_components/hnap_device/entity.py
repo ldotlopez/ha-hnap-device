@@ -42,6 +42,7 @@ class HNapEntity(CoordinatorEntity[HNapCoordinator]):
         self._attr_unique_id = unique_id
         self._attr_name = name
         self._attr_device_info = DeviceInfo(
+            identifiers={("mac", device_info["DeviceMacId"])},
             connections={
                 (CONNECTION_NETWORK_MAC, format_mac(device_info["DeviceMacId"]))
             },
