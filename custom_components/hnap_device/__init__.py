@@ -17,76 +17,87 @@
 # USA.
 
 
+import functools
 import logging
 
 import hnap
-from homeassistant.config_entries import ConfigEntry
+import requests.exceptions
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import (
+    ConfigEntryAuthFailed,
+    ConfigEntryNotReady,
+    ServiceValidationError,
+)
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import service
+from homeassistant.helpers.typing import ConfigType
 
 from .const import CONF_PLATFORMS, DOMAIN
+from .coordinator import HNapConfigEntry, HNapCoordinator, HNapData
 
 _LOGGER = logging.getLogger(__name__)
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    hass.data[DOMAIN] = hass.data.get(DOMAIN, {})
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    async def _handle(call: ServiceCall) -> None:
+        await handle_service_call(hass, call)
 
+    hass.services.async_register(DOMAIN, "call", _handle)
+    return True
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: HNapConfigEntry) -> bool:
     def get_device():
         client = hnap.soapclient.SoapClient(
             hostname=entry.data[CONF_HOST],
             password=entry.data[CONF_PASSWORD],
             username=entry.data[CONF_USERNAME],
         )
-        return hnap.DeviceFactory(client=client)
+        device = hnap.DeviceFactory(client=client)
+        return device, device.client.device_info()
 
-    def get_device_info(device):
-        return device.client.device_info()
+    try:
+        device, device_info = await hass.async_add_executor_job(get_device)
+    except hnap.AuthenticationError as err:
+        raise ConfigEntryAuthFailed(err) from err
+    except (requests.exceptions.RequestException, OSError) as err:
+        raise ConfigEntryNotReady(err) from err
 
-    device = await hass.async_add_executor_job(get_device)
-    device_info = await hass.async_add_executor_job(get_device_info, device)
-
-    hass.data[DOMAIN][entry.entry_id] = device, device_info
+    coordinator = HNapCoordinator(hass, entry, device)
+    await coordinator.async_config_entry_first_refresh()
+    entry.runtime_data = HNapData(
+        device=device, device_info=device_info, coordinator=coordinator
+    )
 
     await hass.config_entries.async_forward_entry_setups(
         entry, entry.data[CONF_PLATFORMS]
     )
-
-    async def _handle_service_call(call):
-        nonlocal hass
-        await handle_service_call(hass, call)
-
-    hass.services.async_register(DOMAIN, "call", _handle_service_call)
-
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Unload a config entry."""
-
-    unloaded = await hass.config_entries.async_unload_platforms(
+async def async_unload_entry(hass: HomeAssistant, entry: HNapConfigEntry) -> bool:
+    return await hass.config_entries.async_unload_platforms(
         entry, entry.data[CONF_PLATFORMS]
     )
 
-    if unloaded:
-        hass.data[DOMAIN].pop(entry.entry_id)
-
-    return unloaded
-
-
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
-
 
 async def handle_service_call(hass: HomeAssistant, call: ServiceCall) -> None:
-    config_ids = await service.async_extract_config_entry_ids(hass, call)
+    config_ids = await service.async_extract_config_entry_ids(call)
+    entries = [
+        e
+        for e in hass.config_entries.async_entries(DOMAIN)
+        if e.entry_id in config_ids and e.runtime_data is not None
+    ]
+    if not entries:
+        raise ServiceValidationError("No matching HNAP device targeted")
 
-    for cid, (obj, _) in hass.data[DOMAIN].items():
-        if cid not in config_ids:
-            continue
-
+    for entry in entries:
         await hass.async_add_executor_job(
-            obj.call, call.data["method"], **call.data.get("parameters", {})
+            functools.partial(
+                entry.runtime_data.device.call,
+                call.data["method"],
+                **call.data.get("parameters", {}),
+            )
         )
