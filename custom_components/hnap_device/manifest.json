@@ -1,16 +1,16 @@
 {
   "domain": "hnap_device",
-  "requirements": [
-    "hnap>=1.0.1,<2.0.0"
-  ],
-  "integration_type": "device",
-  "documentation": "https://github.com/ldotlopez/ha-hnap-device",
-  "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/ldotlopez/ha-hnap-device/issues",
-  "version": "1.2.2",
+  "name": "HNAP device",
   "codeowners": [
     "@ldotlopez"
   ],
   "config_flow": true,
-  "name": "HNAP device"
+  "documentation": "https://github.com/ldotlopez/ha-hnap-device",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/ldotlopez/ha-hnap-device/issues",
+  "requirements": [
+    "hnap>=1.0.1,<2.0.0"
+  ],
+  "version": "1.2.2"
 }
