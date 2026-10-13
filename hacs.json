@@ -1,6 +1,6 @@
 {
-  "name": "HNAP device",
-  "render_readme": true,
-  "content_in_root": false,
-  "homeassistant": "2025.1.0"
+  "render_readme": true, 
+  "homeassistant": "2026.2.0", 
+  "name": "HNAP device", 
+  "content_in_root": false
 }
