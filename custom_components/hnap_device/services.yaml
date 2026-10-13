@@ -5,7 +5,9 @@ call:
   name: Call HNAP method
 
   # Description of the service
-  description: Call HNAP method
+  description: >
+    Call an HNAP method and optionally return its response. When targeting
+    multiple devices, `results` contains one response per matching device.
 
   # If the service accepts entity IDs, target allows the user to specify
   # entities by entity, device, or area. If `target` is specified, `entity_id`

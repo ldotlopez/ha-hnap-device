@@ -19,11 +19,12 @@
 
 import functools
 import logging
+from typing import Any
 
 import hnap
 import requests.exceptions
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse
 from homeassistant.exceptions import (
     ConfigEntryAuthFailed,
     ConfigEntryNotReady,
@@ -41,10 +42,12 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
-    async def _handle(call: ServiceCall) -> None:
-        await handle_service_call(hass, call)
+    async def _handle(call: ServiceCall) -> dict[str, list[Any]] | None:
+        return await handle_service_call(hass, call)
 
-    hass.services.async_register(DOMAIN, "call", _handle)
+    hass.services.async_register(
+        DOMAIN, "call", _handle, supports_response=SupportsResponse.OPTIONAL
+    )
     return True
 
 
@@ -83,7 +86,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: HNapConfigEntry) -> boo
     )
 
 
-async def handle_service_call(hass: HomeAssistant, call: ServiceCall) -> None:
+async def handle_service_call(
+    hass: HomeAssistant, call: ServiceCall
+) -> dict[str, list[Any]] | None:
     config_ids = await service.async_extract_config_entry_ids(call)
     entries = [
         e
@@ -93,11 +98,18 @@ async def handle_service_call(hass: HomeAssistant, call: ServiceCall) -> None:
     if not entries:
         raise ServiceValidationError("No matching HNAP device targeted")
 
+    results = []
     for entry in entries:
-        await hass.async_add_executor_job(
+        result = await hass.async_add_executor_job(
             functools.partial(
                 entry.runtime_data.device.call,
                 call.data["method"],
                 **call.data.get("parameters", {}),
             )
         )
+        if call.return_response:
+            results.append(result)
+
+    if call.return_response:
+        return {"results": results}
+    return None
