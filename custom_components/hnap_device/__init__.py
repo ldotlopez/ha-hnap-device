@@ -23,7 +23,7 @@ from typing import Any
 
 import hnap
 import requests.exceptions
-from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse
 from homeassistant.exceptions import (
     ConfigEntryAuthFailed,
@@ -32,9 +32,10 @@ from homeassistant.exceptions import (
 )
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import service
+from homeassistant.helpers.issue_registry import async_delete_issue
 from homeassistant.helpers.typing import ConfigType
 
-from .const import CONF_PLATFORMS, DOMAIN
+from .const import CONF_PLATFORMS, DOMAIN, ISSUE_CONNECTION_LOST
 from .coordinator import HNapConfigEntry, HNapCoordinator, HNapData
 
 _LOGGER = logging.getLogger(__name__)
@@ -70,20 +71,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: HNapConfigEntry) -> bool
 
     coordinator = HNapCoordinator(hass, entry, device)
     await coordinator.async_config_entry_first_refresh()
-    entry.runtime_data = HNapData(
-        device=device, device_info=device_info, coordinator=coordinator
-    )
+    entry.runtime_data = HNapData(device_info=device_info, coordinator=coordinator)
 
-    await hass.config_entries.async_forward_entry_setups(
-        entry, entry.data[CONF_PLATFORMS]
-    )
+    await hass.config_entries.async_forward_entry_setups(entry, _entry_platforms(entry))
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: HNapConfigEntry) -> bool:
-    return await hass.config_entries.async_unload_platforms(
-        entry, entry.data[CONF_PLATFORMS]
+    unloaded = await hass.config_entries.async_unload_platforms(
+        entry, _entry_platforms(entry)
     )
+    if unloaded:
+        async_delete_issue(
+            hass,
+            DOMAIN,
+            f"{ISSUE_CONNECTION_LOST}_{entry.entry_id}",
+        )
+    return unloaded
+
+
+def _entry_platforms(entry: HNapConfigEntry) -> list[Platform]:
+    """Include the diagnostic connection entity for existing entries."""
+    return list(dict.fromkeys([*entry.data[CONF_PLATFORMS], Platform.BINARY_SENSOR]))
 
 
 async def handle_service_call(

@@ -47,7 +47,9 @@ class HNAPSiren(HNapEntity, SirenEntity):
         | SirenEntityFeature.DURATION
         | SirenEntityFeature.VOLUME_SET
     )
-    _attr_available_tones: ClassVar[list[str]] = [x.name.lower().replace("_", "-") for x in hnap.SirenSound]
+    _attr_available_tones: ClassVar[list[str]] = [
+        x.name.lower().replace("_", "-") for x in hnap.SirenSound
+    ]
 
     @property
     def is_on(self) -> bool | None:
@@ -83,7 +85,6 @@ async def async_setup_entry(
                 data.coordinator,
                 unique_id=f"{config_entry.entry_id}-{Platform.SIREN}",
                 device_info=data.device_info,
-                device=data.device,
             )
         ]
     )

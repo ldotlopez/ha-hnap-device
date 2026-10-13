@@ -5,7 +5,11 @@
 [![Validate with HACS](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hacs.yml/badge.svg)](https://github.com/ldotlopez/ha-hnap-device/actions/workflows/hacs.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/ldotlopez/ha-hnap-device?include_prereleases)](https://github.com/ldotlopez/ha-hnap-device/releases)
 
-This project brings supported HNAP devices into Home Assistant, so you can use them in your home alongside your other smart devices. Communication takes place locally on your network; the integration does not rely on a cloud service. Devices are checked periodically, so updates are polling-based rather than instantaneous.
+This project brings supported HNAP devices into Home Assistant, so you can use
+them in your home alongside your other smart devices. Communication takes
+place locally on your network; the integration does not rely on a cloud
+service. Devices are checked periodically, so updates are polling-based rather
+than instantaneous.
 
 Known tested devices:
 
@@ -22,6 +26,18 @@ The available entities depend on the device: motion sensors provide a motion sen
 4. Enter the device's network address, username, and password when prompted. Home Assistant will identify the device and add the entities it supports.
 
 Use the username and password configured on the device. The device must be reachable from Home Assistant on the local network.
+
+## Connection status and troubleshooting
+
+If a device becomes unreachable, its device entities show as unavailable while
+the integration retries the connection every 30 seconds. The diagnostic
+**Connection** binary sensor remains available to show whether communication is
+restored. Home Assistant also displays a Repair notification explaining the
+connection loss; it is cleared automatically after communication is restored.
+
+If the device remains unavailable, check that it is powered on, reachable from
+Home Assistant on the local network, and that its configured credentials are
+still valid.
 
 ## AI-assisted development
 

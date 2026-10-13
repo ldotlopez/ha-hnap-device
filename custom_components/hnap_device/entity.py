@@ -35,7 +35,6 @@ class HNapEntity(CoordinatorEntity[HNapCoordinator]):
         *,
         unique_id: str,
         device_info: dict[str, str],
-        device: Any,
         name: str | None = None,
     ):
         super().__init__(coordinator)
@@ -50,4 +49,8 @@ class HNapEntity(CoordinatorEntity[HNapCoordinator]):
             model=device_info["ModelName"],
             name=device_info["DeviceName"],
         )
-        self.device = device
+
+    @property
+    def device(self) -> Any:
+        """Return the current device client after reconnection."""
+        return self.coordinator.device

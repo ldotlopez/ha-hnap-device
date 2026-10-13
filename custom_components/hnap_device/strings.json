@@ -3,43 +3,56 @@
     "call": {
       "fields": {
         "method": {
-          "name": "Method", 
+          "name": "Method",
           "description": "Method to call"
-        }, 
+        },
         "parameters": {
-          "name": "Parameters", 
+          "name": "Parameters",
           "description": "Method specific parameters"
         }
-      }, 
-      "name": "Call HNAP method", 
+      },
+      "name": "Call HNAP method",
       "description": "Call HNAP method"
     }
-  }, 
+  },
   "config": {
     "step": {
       "reauth_confirm": {
         "data": {
           "password": "[%key:common::config_flow::data::password%]"
-        }, 
+        },
         "title": "Re-authenticate"
-      }, 
+      },
       "user": {
         "data": {
-          "username": "[%key:common::config_flow::data::username%]", 
-          "host": "[%key:common::config_flow::data::host%]", 
+          "username": "[%key:common::config_flow::data::username%]",
+          "host": "[%key:common::config_flow::data::host%]",
           "password": "[%key:common::config_flow::data::password%]"
         }
       }
-    }, 
+    },
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]", 
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]",
       "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]"
-    }, 
+    },
     "error": {
-      "unknown": "[%key:common::config_flow::error::unknown%]", 
-      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]", 
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]", 
+      "unknown": "[%key:common::config_flow::error::unknown%]",
+      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
       "invalid_device_type": "[%key:common::config_flow::error::invalid_device_type%]"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "connection": {
+        "name": "Connection"
+      }
+    }
+  },
+  "issues": {
+    "connection_lost": {
+      "title": "HNAP device connection lost",
+      "description": "Home Assistant cannot communicate with this HNAP device. The integration will retry automatically. Check that the device is powered on, reachable on the network, and that its configured credentials are still valid."
     }
   }
 }

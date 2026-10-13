@@ -18,5 +18,18 @@
         }
       }
     }
+  },
+  "entity": {
+    "binary_sensor": {
+      "connection": {
+        "name": "Connessione"
+      }
+    }
+  },
+  "issues": {
+    "connection_lost": {
+      "title": "Connessione al dispositivo HNAP persa",
+      "description": "Home Assistant non riesce a comunicare con questo dispositivo HNAP. L'integrazione riprover\u00e0 automaticamente. Verifica che il dispositivo sia acceso, raggiungibile in rete e che le credenziali configurate siano valide."
+    }
   }
 }

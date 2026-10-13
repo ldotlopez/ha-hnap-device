@@ -18,6 +18,7 @@
 
 
 """Config flow for HNAP device integration."""
+
 from __future__ import annotations
 
 import functools
@@ -88,8 +89,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     if isinstance(device, hnap.Camera):
         # 'Optical Recognition', 'Environmental Sensor', 'Camera']
         platforms.append(Platform.CAMERA)
-    if isinstance(device, hnap.Motion):
-        platforms.append(Platform.BINARY_SENSOR)
+    platforms.append(Platform.BINARY_SENSOR)
     if isinstance(device, hnap.Siren):
         platforms.append(Platform.SIREN)
 
@@ -143,7 +143,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
-    async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> ConfigFlowResult:
+    async def async_step_reauth(
+        self, entry_data: Mapping[str, Any]
+    ) -> ConfigFlowResult:
         return await self.async_step_reauth_confirm()
 
     async def async_step_reauth_confirm(
@@ -178,10 +180,8 @@ class CannotConnect(HomeAssistantError):
     """Error to indicate we cannot connect."""
 
 
-
 class InvalidAuth(HomeAssistantError):
     """Error to indicate there is invalid auth."""
-
 
 
 class InvalidDeviceType(HomeAssistantError):

@@ -3,43 +3,56 @@
     "call": {
       "fields": {
         "method": {
-          "name": "Method", 
+          "name": "Method",
           "description": "Method to call"
-        }, 
+        },
         "parameters": {
-          "name": "Parameters", 
+          "name": "Parameters",
           "description": "Method specific parameters"
         }
-      }, 
-      "name": "Call HNAP method", 
+      },
+      "name": "Call HNAP method",
       "description": "Call HNAP method"
     }
-  }, 
+  },
   "config": {
     "step": {
       "reauth_confirm": {
         "data": {
           "password": "Password"
-        }, 
+        },
         "title": "Re-authenticate"
-      }, 
+      },
       "user": {
         "data": {
-          "username": "Username", 
-          "host": "Host", 
+          "username": "Username",
+          "host": "Host",
           "password": "Password"
         }
       }
-    }, 
+    },
     "abort": {
-      "already_configured": "Device is already configured", 
+      "already_configured": "Device is already configured",
       "reauth_successful": "Re-authentication was successful"
-    }, 
+    },
     "error": {
-      "unknown": "Unexpected error", 
-      "invalid_auth": "Invalid authentication", 
-      "cannot_connect": "Failed to connect", 
+      "unknown": "Unexpected error",
+      "invalid_auth": "Invalid authentication",
+      "cannot_connect": "Failed to connect",
       "invalid_device_type": "Invalid device type"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "connection": {
+        "name": "Connection"
+      }
+    }
+  },
+  "issues": {
+    "connection_lost": {
+      "title": "HNAP device connection lost",
+      "description": "Home Assistant cannot communicate with this HNAP device. The integration will retry automatically. Check that the device is powered on, reachable on the network, and that its configured credentials are still valid."
     }
   }
 }
