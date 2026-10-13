@@ -26,5 +26,6 @@ There is no tracked test suite or build command. CI runs Home Assistant `hassfes
 - Share device/session state through typed `HNapConfigEntry.runtime_data`; have entities consume coordinator data rather than independently polling.
 - When adding a device capability, update the config-flow platform detection and add the corresponding platform setup/entity implementation. Keep platform and entity identity consistent with existing entry-ID/platform unique IDs.
 - Keep user-facing config-flow text in `strings.json` and translated files under `translations/`; keep service fields and targeting documented in `services.yaml`.
+- Keep the README overview focused on the project and supported devices. Put technical behavior, usage details, and troubleshooting guidance in dedicated sections rather than the introduction.
 - The integration manifest controls its external `hnap` dependency and Home Assistant integration metadata; update its version consistently with the project/release version when preparing a release.
 - Do not sign commits or add attribution trailers: do not enable or request GPG/SSH commit signing, add `Signed-off-by` or `Co-authored-by` trailers, or use `--signoff`.
