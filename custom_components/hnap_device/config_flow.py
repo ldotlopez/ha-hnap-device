@@ -23,6 +23,7 @@ from __future__ import annotations
 import functools
 import logging
 import os
+from collections.abc import Mapping
 from typing import Any
 
 import hnap.soapclient
@@ -39,6 +40,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.device_registry import format_mac
 
 from .const import CONF_PLATFORMS, DEFAULT_USERNAME, DOMAIN
 
@@ -97,6 +99,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     info = await hass.async_add_executor_job(device.client.device_info)
     return {
         CONF_NAME: info["ModelName"],
+        "mac": format_mac(info["DeviceMacId"]),
         CONF_HOST: data[CONF_HOST],
         CONF_PASSWORD: data[CONF_PASSWORD],
         CONF_USERNAME: data[CONF_USERNAME],
@@ -104,7 +107,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     }
 
 
-class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call-arg]
+class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for HNAP device."""
 
     VERSION = 1
@@ -132,23 +135,53 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
         else:
+            await self.async_set_unique_id(info.pop("mac"))
+            self._abort_if_unique_id_configured()
             return self.async_create_entry(title=info.pop(CONF_NAME), data=info)
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
+    async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> ConfigFlowResult:
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        entry = self._get_reauth_entry()
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            try:
+                info = await validate_input(
+                    self.hass, {**entry.data, CONF_PASSWORD: user_input[CONF_PASSWORD]}
+                )
+            except CannotConnect:
+                errors["base"] = "cannot_connect"
+            except InvalidAuth:
+                errors["base"] = "invalid_auth"
+            except Exception:  # pylint: disable=broad-except
+                _LOGGER.exception("Unexpected exception")
+                errors["base"] = "unknown"
+            else:
+                return self.async_update_reload_and_abort(
+                    entry, data_updates={CONF_PASSWORD: info[CONF_PASSWORD]}
+                )
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=vol.Schema({vol.Required(CONF_PASSWORD): str}),
+            errors=errors,
+        )
+
 
 class CannotConnect(HomeAssistantError):
     """Error to indicate we cannot connect."""
 
-    pass
 
 
 class InvalidAuth(HomeAssistantError):
     """Error to indicate there is invalid auth."""
 
-    pass
 
 
 class InvalidDeviceType(HomeAssistantError):

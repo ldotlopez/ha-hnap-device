@@ -1,31 +1,45 @@
 {
+  "services": {
+    "call": {
+      "fields": {
+        "method": {
+          "name": "Method", 
+          "description": "Method to call"
+        }, 
+        "parameters": {
+          "name": "Parameters", 
+          "description": "Method specific parameters"
+        }
+      }, 
+      "name": "Call HNAP method", 
+      "description": "Call HNAP method"
+    }
+  }, 
   "config": {
     "step": {
+      "reauth_confirm": {
+        "data": {
+          "password": "[%key:common::config_flow::data::password%]"
+        }, 
+        "title": "Re-authenticate"
+      }, 
       "user": {
         "data": {
-          "host": "[%key:common::config_flow::data::host%]",
-          "username": "[%key:common::config_flow::data::username%]",
+          "username": "[%key:common::config_flow::data::username%]", 
+          "host": "[%key:common::config_flow::data::host%]", 
           "password": "[%key:common::config_flow::data::password%]"
         }
       }
-    },
-    "error": {
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
-      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
-      "invalid_device_type": "[%key:common::config_flow::error::invalid_device_type%]",
-      "unknown": "[%key:common::config_flow::error::unknown%]"
-    },
+    }, 
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
-    }
-  },
-  "options": {
-    "step": {
-      "init": {
-        "data": {
-          "auto_reboot": "Reboot device each 12 hours"
-        }
-      }
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]", 
+      "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]"
+    }, 
+    "error": {
+      "unknown": "[%key:common::config_flow::error::unknown%]", 
+      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]", 
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]", 
+      "invalid_device_type": "[%key:common::config_flow::error::invalid_device_type%]"
     }
   }
 }

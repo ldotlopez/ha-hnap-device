@@ -1,31 +1,45 @@
 {
+  "services": {
+    "call": {
+      "fields": {
+        "method": {
+          "name": "Method", 
+          "description": "Method to call"
+        }, 
+        "parameters": {
+          "name": "Parameters", 
+          "description": "Method specific parameters"
+        }
+      }, 
+      "name": "Call HNAP method", 
+      "description": "Call HNAP method"
+    }
+  }, 
   "config": {
-    "abort": {
-      "already_configured": "Device is already configured"
-    },
-    "error": {
-      "cannot_connect": "Failed to connect",
-      "invalid_auth": "Invalid authentication",
-      "invalid_device_type": "Invalid device type",
-      "unknown": "Unexpected error"
-    },
     "step": {
+      "reauth_confirm": {
+        "data": {
+          "password": "Password"
+        }, 
+        "title": "Re-authenticate"
+      }, 
       "user": {
         "data": {
-          "host": "Host",
-          "password": "Password",
-          "username": "Username"
+          "username": "Username", 
+          "host": "Host", 
+          "password": "Password"
         }
       }
-    }
-  },
-  "options": {
-    "step": {
-      "init": {
-        "data": {
-          "auto_reboot": "Reboot device each 12 hours"
-        }
-      }
+    }, 
+    "abort": {
+      "already_configured": "Device is already configured", 
+      "reauth_successful": "Re-authentication was successful"
+    }, 
+    "error": {
+      "unknown": "Unexpected error", 
+      "invalid_auth": "Invalid authentication", 
+      "cannot_connect": "Failed to connect", 
+      "invalid_device_type": "Invalid device type"
     }
   }
 }
