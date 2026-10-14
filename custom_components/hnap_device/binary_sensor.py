@@ -67,7 +67,7 @@ async def async_setup_entry(
             device_info=data.device_info,
         )
     ]
-    if isinstance(data.device, hnap.Motion):
+    if data.device.device_type == hnap.DeviceType.MOTION:
         entities.append(
             HNAPMotion(
                 data.coordinator,

@@ -12,12 +12,11 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 # USA.
 
-
-"""Config flow for HNAP device integration."""
+"""Config flow for HNAP device."""
 
 from __future__ import annotations
 
@@ -26,8 +25,8 @@ import os
 from collections.abc import Mapping
 from typing import Any
 
-import hnap.soapclient
-import requests
+import aiohttp
+import hnap
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigFlowResult
@@ -43,7 +42,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import format_mac
 
 from .const import CONF_PLATFORMS, DEFAULT_USERNAME, DOMAIN
-from .device import UnsupportedDeviceType, create_device
+from .device import async_create_device
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -64,37 +63,25 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
-    """Validate the user input allows us to connect.
-
-    Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the
-    user.
-    """
-
-    def create_configured_device():
-        client = hnap.soapclient.SoapClient(
-            hostname=data[CONF_HOST],
-            password=data[CONF_PASSWORD],
-            username=data[CONF_USERNAME],
-        )
-        info = client.device_info()
-        return create_device(client, info), info
-
+    """Validate credentials and return the discovered device's config-entry data."""
+    device = None
     try:
-        device, info = await hass.async_add_executor_job(create_configured_device)
-
-    except requests.exceptions.ConnectionError as e:
-        raise CannotConnect() from e
-
-    except hnap.AuthenticationError as e:
-        raise InvalidAuth() from e
-
-    except UnsupportedDeviceType as e:
-        raise InvalidDeviceType(str(e)) from e
+        device = await async_create_device(hass, data)
+        info = await device.get_info()
+    except hnap.AuthenticationError as err:
+        raise InvalidAuth() from err
+    except (aiohttp.ClientError, hnap.MethodCallError, OSError, TimeoutError) as err:
+        raise CannotConnect() from err
+    except TypeError as err:
+        raise InvalidDeviceType() from err
+    finally:
+        if device is not None:
+            await device.close()
 
     platforms = [Platform.BINARY_SENSOR]
-    if isinstance(device, hnap.Camera):
+    if device.device_type == hnap.DeviceType.CAMERA:
         platforms.append(Platform.CAMERA)
-    if isinstance(device, hnap.Siren):
+    if device.device_type == hnap.DeviceType.SIREN:
         platforms.append(Platform.SIREN)
 
     return {
@@ -122,7 +109,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
 
         errors = {}
-
         try:
             info = await validate_input(self.hass, user_input)
         except CannotConnect:
@@ -131,7 +117,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors["base"] = "invalid_auth"
         except InvalidDeviceType:
             errors["base"] = "invalid_device_type"
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
         else:
@@ -146,11 +132,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_reauth(
         self, entry_data: Mapping[str, Any]
     ) -> ConfigFlowResult:
+        """Start reauthentication for an existing entry."""
         return await self.async_step_reauth_confirm()
 
     async def async_step_reauth_confirm(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
+        """Validate and save replacement credentials."""
         entry = self._get_reauth_entry()
         errors: dict[str, str] = {}
         if user_input is not None:
@@ -162,7 +150,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_connect"
             except InvalidAuth:
                 errors["base"] = "invalid_auth"
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
             else:
@@ -185,4 +173,4 @@ class InvalidAuth(HomeAssistantError):
 
 
 class InvalidDeviceType(HomeAssistantError):
-    pass
+    """Error to indicate the device type is unsupported."""

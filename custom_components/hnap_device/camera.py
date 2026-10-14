@@ -47,17 +47,3 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     _LOGGER.error("camera support is not implemented yet")
-
-    # api = hass.data[DOMAIN][config_entry.entry_id]
-    # device_info = await hass.async_add_executor_job(device.client.device_info)
-    #
-    # add_entities(
-    #     [
-    #         HNAPCamera(
-    #             unique_id=config_entry.entry_id,
-    #             device_info=device_info,
-    #             api=api,
-    #         )
-    #     ],
-    #     update_before_add=True,
-    # )

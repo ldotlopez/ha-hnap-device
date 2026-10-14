@@ -17,8 +17,7 @@
 # USA.
 
 
-from typing import Any
-
+import hnap
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, format_mac
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -51,6 +50,6 @@ class HNapEntity(CoordinatorEntity[HNapCoordinator]):
         )
 
     @property
-    def device(self) -> Any:
-        """Return the current device client after reconnection."""
+    def device(self) -> hnap.Device:
+        """Return the current device."""
         return self.coordinator.device

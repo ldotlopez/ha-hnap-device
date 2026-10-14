@@ -1140,6 +1140,7 @@ source = { virtual = "." }
 
 [package.dev-dependencies]
 dev = [
+    { name = "hnap" },
     { name = "homeassistant" },
     { name = "pre-commit" },
     { name = "types-requests" },
@@ -1149,6 +1150,7 @@ dev = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "hnap", specifier = ">=2.0.0a0,<3.0.0" },
     { name = "homeassistant", specifier = "==2026.2.0" },
     { name = "pre-commit", specifier = ">=4.0.1" },
     { name = "types-requests", specifier = ">=2.31.0.6" },
@@ -1226,6 +1228,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8b/9d/60316d7866c5818b8002e3d570b9d8042d5dd923a659d542b245f89c955b/hass_nabucasa-1.12.0.tar.gz", hash = "sha256:06bc4ebe89ffd08b744aa6540a2ebc44a82f60e2e74645e3b7498385c88d722c", size = 114395, upload-time = "2026-01-28T12:42:34.214Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ca/71/1691d35d7bd103584f43f3d41ea6a0e8aae451ac5d50fa47b53e085c4f53/hass_nabucasa-1.12.0-py3-none-any.whl", hash = "sha256:90debd3efa2bdf6bca03e20f1a61e15441b260661ed17106dca6141b005ef788", size = 89373, upload-time = "2026-01-28T12:42:33.091Z" },
+]
+
+[[package]]
+name = "hnap"
+version = "2.0.0a0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "importlib-metadata" },
+    { name = "xmltodict" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/12/87/acee0f495a2a51e51c1cfdb303327e9b2841f23d2772406d231ae53df86c/hnap-2.0.0a0.tar.gz", hash = "sha256:aac72165df314b4105dc8e831471060262d956b55b09ec41a303cefe929124ad", size = 23011, upload-time = "2026-10-14T15:24:02.432Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/59/4f/a9a03f6bcb6530edf47200544e6891eac9deee7ebafe5fb8c074bfaa29a6/hnap-2.0.0a0-py3-none-any.whl", hash = "sha256:79c5875afcf2acb8ba1403895c50bbad0c143f382834a1ee89a49ab122356e3a", size = 26181, upload-time = "2026-10-14T15:24:01.473Z" },
 ]
 
 [[package]]
@@ -1363,6 +1379,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e8/ac/fb4c578f4a3256561548cd825646680edcadb9440f3f68add95ade1eb791/ifaddr-0.2.0.tar.gz", hash = "sha256:cc0cbfcaabf765d44595825fb96a99bb12c79716b73b44330ea38ee2b0c4aed4", size = 10485, upload-time = "2022-06-15T21:40:27.561Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9c/1f/19ebc343cc71a7ffa78f17018535adc5cbdd87afb31d7c34874680148b32/ifaddr-0.2.0-py3-none-any.whl", hash = "sha256:085e0305cfe6f16ab12d72e2024030f5d52674afad6911bb1eee207177b8a748", size = 12314, upload-time = "2022-06-15T21:40:25.756Z" },
+]
+
+[[package]]
+name = "importlib-metadata"
+version = "9.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "zipp" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6f/7e/1e7e8dc30634b93ebb3d58a3dea569ad146e656218d3960ab04f62047b29/importlib_metadata-9.0.1.tar.gz", hash = "sha256:ab830580bc0ef3db61ce8fae716389e5462b67e033018bab6d8f80ef17172f99", size = 59124, upload-time = "2026-08-28T15:30:34.646Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b3/55/ecca97ae19075f1fac62def77731e7f535e6c1fb8f92ff08160c5e6dade8/importlib_metadata-9.0.1-py3-none-any.whl", hash = "sha256:bba5600596a7e21f3eef53281cf28d6a5195634d2f2b78ff9501a3272c6eaab0", size = 27920, upload-time = "2026-08-28T15:30:33.433Z" },
 ]
 
 [[package]]
@@ -2706,6 +2734,15 @@ wheels = [
 ]
 
 [[package]]
+name = "xmltodict"
+version = "1.0.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/70/80f3b7c10d2630aa66414bf23d210386700aa390547278c789afa994fd7e/xmltodict-1.0.4.tar.gz", hash = "sha256:6d94c9f834dd9e44514162799d344d815a3a4faec913717a9ecbfa5be1bb8e61", size = 26124, upload-time = "2026-02-22T02:21:22.074Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/38/34/98a2f52245f4d47be93b580dae5f9861ef58977d73a79eb47c58f1ad1f3a/xmltodict-1.0.4-py3-none-any.whl", hash = "sha256:a4a00d300b0e1c59fc2bfccb53d7b2e88c32f200df138a0dd2229f842497026a", size = 13580, upload-time = "2026-02-22T02:21:21.039Z" },
+]
+
+[[package]]
 name = "yarl"
 version = "1.22.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2823,4 +2860,13 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/c4/05/f8b88937659075116c122355bdd9ce52376cc46e2269d91d7d4f10c9a658/zeroconf-0.148.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:f6e3dd22732df47a126aefb5ca4b267e828b47098a945d4468d38c72843dd6df", size = 4311455, upload-time = "2025-10-05T01:09:22.042Z" },
     { url = "https://files.pythonhosted.org/packages/58/c0/359bdb3b435d9c573aec1f877f8a63d5e81145deb6c160de89647b237363/zeroconf-0.148.0-cp314-cp314t-win32.whl", hash = "sha256:cdc8083f0b5efa908ab6c8e41687bcb75fd3d23f49ee0f34cbc58422437a456f", size = 2755961, upload-time = "2025-10-05T01:09:24.041Z" },
     { url = "https://files.pythonhosted.org/packages/d8/ab/7b487afd5d1fd053c5a018565be734ac6d5e554bce938c7cc126154adcfc/zeroconf-0.148.0-cp314-cp314t-win_amd64.whl", hash = "sha256:f72c1f77a89638e87f243a63979f0fd921ce391f83e18e17ec88f9f453717701", size = 3309977, upload-time = "2025-10-05T01:09:26.039Z" },
+]
+
+[[package]]
+name = "zipp"
+version = "4.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/dc/23/655a1802fe8041302c959774ca7c80b53bc24737ff3ef45cb50ef11bd96c/zipp-4.1.1.tar.gz", hash = "sha256:7ebb7a44c021b29fd8dbd7cce6812d0d7b5b454521f93cc71af6ccd155aaa70b", size = 27649, upload-time = "2026-10-03T17:03:03.452Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b5/98/df615823cd9419131ce19fba00de53a663794369e198aade064a244b385d/zipp-4.1.1-py3-none-any.whl", hash = "sha256:8979f52d874162f485ff2981e3891f3a3317b7a3dd43ff1e1775b9304f307a9c", size = 10582, upload-time = "2026-10-03T17:03:02.506Z" },
 ]

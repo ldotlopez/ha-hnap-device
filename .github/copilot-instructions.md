@@ -4,7 +4,7 @@
 
 This repository is a Home Assistant custom integration for locally polled HNAP devices. The integration code lives in `custom_components/hnap_device`; `hnap` is the protocol client dependency declared in `manifest.json`.
 
-The config flow in `config_flow.py` creates devices and validates credentials in Home Assistant's executor, identifies devices by MAC address, and records the supported platforms in the config entry. `__init__.py` creates the device and `HNapCoordinator`, stores shared objects in `entry.runtime_data`, then forwards setup to those platforms. The coordinator polls every 30 seconds; entities in `binary_sensor.py` and `siren.py` read its data, and blocking device operations must run in the executor. `entity.py` centralizes shared entity and device-registry metadata.
+The config flow in `config_flow.py` creates devices through the async `hnap.DeviceFactory`, validates credentials, identifies devices by MAC address, and records supported platforms in the config entry. `device.py` injects Home Assistant Core's shared aiohttp session into each factory call. `__init__.py` creates the device and `HNapCoordinator`, stores shared objects in `entry.runtime_data`, then forwards setup to those platforms. The coordinator polls every 30 seconds; after a poll failure it recreates the device with a Home Assistant-managed session that sends `Connection: close` and retries the read once. Entities in `binary_sensor.py` and `siren.py` read coordinator data and await device operations directly. `entity.py` centralizes shared entity and device-registry metadata.
 
 The config flow currently recognizes cameras, but `camera.py` is only a placeholder and does not add an entity. The README lists motion sensors and sirens as the implemented platforms.
 
@@ -18,11 +18,11 @@ Use Python 3.13.2 or later; `.python-version` pins 3.13.2. `uv sync` installs th
 - Run hooks on changed files: `uv run pre-commit run --files custom_components/hnap_device/<file>`
 - Run an individual hook on changed files, for example: `uv run pre-commit run black --files custom_components/hnap_device/<file>` (also available: `isort`, `pyupgrade`, `check-json`, and other hooks in `.pre-commit-config.yaml`)
 
-There is no tracked test suite or build command. CI runs Home Assistant `hassfest` and HACS validation; CodeQL performs Python analysis.
+Run the focused unit suite with `uv run python -m unittest discover -s tests -v`. CI runs Home Assistant `hassfest` and HACS validation; CodeQL performs Python analysis.
 
 ## Repository conventions
 
-- Keep Home Assistant's async event loop non-blocking: run synchronous `hnap` client calls through `hass.async_add_executor_job`.
+- Use `hnap`'s async-only API directly; do not add executor jobs or synchronous compatibility code. Inject Home Assistant Core's shared aiohttp session with `homeassistant.helpers.aiohttp_client.async_get_clientsession(hass)` and never close that shared session.
 - Share device/session state through typed `HNapConfigEntry.runtime_data`; have entities consume coordinator data rather than independently polling.
 - When adding a device capability, update the config-flow platform detection and add the corresponding platform setup/entity implementation. Keep platform and entity identity consistent with existing entry-ID/platform unique IDs.
 - Keep user-facing config-flow text in `strings.json` and translated files under `translations/`; keep service fields and targeting documented in `services.yaml`.

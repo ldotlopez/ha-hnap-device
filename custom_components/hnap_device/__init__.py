@@ -12,18 +12,15 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 # USA.
 
-
-import functools
-import logging
 from typing import Any
 
+import aiohttp
 import hnap
-import requests.exceptions
-from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME, Platform
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse
 from homeassistant.exceptions import (
     ConfigEntryAuthFailed,
@@ -37,9 +34,8 @@ from homeassistant.helpers.typing import ConfigType
 
 from .const import CONF_PLATFORMS, DOMAIN, ISSUE_CONNECTION_LOST
 from .coordinator import HNapConfigEntry, HNapCoordinator, HNapData
-from .device import create_device
+from .device import async_create_device
 
-_LOGGER = logging.getLogger(__name__)
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
@@ -54,27 +50,29 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: HNapConfigEntry) -> bool:
-    def get_device():
-        client = hnap.soapclient.SoapClient(
-            hostname=entry.data[CONF_HOST],
-            password=entry.data[CONF_PASSWORD],
-            username=entry.data[CONF_USERNAME],
-        )
-        device_info = client.device_info()
-        return create_device(client, device_info), device_info
-
     try:
-        device, device_info = await hass.async_add_executor_job(get_device)
+        device = await async_create_device(hass, entry.data)
     except hnap.AuthenticationError as err:
         raise ConfigEntryAuthFailed(err) from err
-    except (requests.exceptions.RequestException, OSError) as err:
+    except (aiohttp.ClientError, hnap.MethodCallError, OSError, TimeoutError) as err:
         raise ConfigEntryNotReady(err) from err
 
-    coordinator = HNapCoordinator(hass, entry, device)
-    await coordinator.async_config_entry_first_refresh()
-    entry.runtime_data = HNapData(device_info=device_info, coordinator=coordinator)
+    coordinator = None
+    try:
+        device_info = await device.get_info()
+        coordinator = HNapCoordinator(hass, entry, device)
+        await coordinator.async_config_entry_first_refresh()
+        entry.runtime_data = HNapData(device_info=device_info, coordinator=coordinator)
+        await hass.config_entries.async_forward_entry_setups(
+            entry, _entry_platforms(entry)
+        )
+    except BaseException:
+        if coordinator is not None:
+            await coordinator.async_close()
+        await device.close()
+        entry.runtime_data = None
+        raise
 
-    await hass.config_entries.async_forward_entry_setups(entry, _entry_platforms(entry))
     return True
 
 
@@ -88,6 +86,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: HNapConfigEntry) -> boo
             DOMAIN,
             f"{ISSUE_CONNECTION_LOST}_{entry.entry_id}",
         )
+        await entry.runtime_data.coordinator.async_close()
+        await entry.runtime_data.device.close()
     return unloaded
 
 
@@ -101,21 +101,18 @@ async def handle_service_call(
 ) -> dict[str, list[Any]] | None:
     config_ids = await service.async_extract_config_entry_ids(call)
     entries = [
-        e
-        for e in hass.config_entries.async_entries(DOMAIN)
-        if e.entry_id in config_ids and e.runtime_data is not None
+        entry
+        for entry in hass.config_entries.async_entries(DOMAIN)
+        if entry.entry_id in config_ids and entry.runtime_data is not None
     ]
     if not entries:
         raise ServiceValidationError("No matching HNAP device targeted")
 
     results = []
     for entry in entries:
-        result = await hass.async_add_executor_job(
-            functools.partial(
-                entry.runtime_data.device.call,
-                call.data["method"],
-                **call.data.get("parameters", {}),
-            )
+        result = await entry.runtime_data.device.call(
+            call.data["method"],
+            **call.data.get("parameters", {}),
         )
         if call.return_response:
             results.append(result)

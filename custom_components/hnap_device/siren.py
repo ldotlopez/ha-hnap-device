@@ -19,7 +19,6 @@
 
 """Siren sensor for HNAP device integration."""
 
-import functools
 from typing import Any, ClassVar
 
 import hnap
@@ -56,20 +55,15 @@ class HNAPSiren(HNapEntity, SirenEntity):
         return self.coordinator.data.get("siren")
 
     async def async_turn_on(self, **kwargs: Any) -> None:
-        await self.hass.async_add_executor_job(
-            functools.partial(
-                self.device.play,
-                sound=hnap.SirenSound.fromstring(
-                    kwargs.get(ATTR_TONE, DEFAULT_SIREN_TONE)
-                ),
-                volume=int(kwargs.get(ATTR_VOLUME_LEVEL, DEFAULT_SIREN_VOLUME) * 100),
-                duration=kwargs.get(ATTR_DURATION, DEFAULT_SIREN_DURATION),
-            )
+        await self.device.play(
+            sound=hnap.SirenSound.fromstring(kwargs.get(ATTR_TONE, DEFAULT_SIREN_TONE)),
+            volume=int(kwargs.get(ATTR_VOLUME_LEVEL, DEFAULT_SIREN_VOLUME) * 100),
+            duration=kwargs.get(ATTR_DURATION, DEFAULT_SIREN_DURATION),
         )
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
-        await self.hass.async_add_executor_job(self.device.stop)
+        await self.device.stop()
         await self.coordinator.async_request_refresh()
 
 
