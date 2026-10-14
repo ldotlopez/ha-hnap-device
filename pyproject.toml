@@ -1,6 +1,6 @@
 [project]
 name = "ha-hnap-device"
-version = "2.0.0"
+version = "2.0.1"
 description ="HomeAssistant integration for HNAP devices"
 readme = "README.md"
 requires-python = ">=3.13.2"
@@ -21,7 +21,7 @@ Repository = "https://github.com/ldotlopez/ha-hnap-device.git"
 
 [dependency-groups]
 dev = [
-    "hnap>=2.0.0rc1,<3.0.0",
+    "hnap>=2.0.0rc0,<3.0.0",
     # "black>=24.10.0",
     "homeassistant==2026.2.0",
     # "ipdb>=0.13.13",

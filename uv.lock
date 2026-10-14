@@ -1135,7 +1135,7 @@ wheels = [
 
 [[package]]
 name = "ha-hnap-device"
-version = "1.2.2"
+version = "2.0.1"
 source = { virtual = "." }
 
 [package.dev-dependencies]
@@ -1150,7 +1150,7 @@ dev = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "hnap", specifier = ">=2.0.0a0,<3.0.0" },
+    { name = "hnap", specifier = ">=2.0.0rc0,<3.0.0" },
     { name = "homeassistant", specifier = "==2026.2.0" },
     { name = "pre-commit", specifier = ">=4.0.1" },
     { name = "types-requests", specifier = ">=2.31.0.6" },
@@ -1232,16 +1232,16 @@ wheels = [
 
 [[package]]
 name = "hnap"
-version = "2.0.0a0"
+version = "2.0.0rc0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "importlib-metadata" },
     { name = "xmltodict" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/12/87/acee0f495a2a51e51c1cfdb303327e9b2841f23d2772406d231ae53df86c/hnap-2.0.0a0.tar.gz", hash = "sha256:aac72165df314b4105dc8e831471060262d956b55b09ec41a303cefe929124ad", size = 23011, upload-time = "2026-10-14T15:24:02.432Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fa/7f/c6a90bc252132f273262ea9c2cea7054d98f5792fb351803dbea314d5ac6/hnap-2.0.0rc0.tar.gz", hash = "sha256:621969bec8c48933b6fc15010240c975f0d3c1add22cb30cb240acac1db80b96", size = 23469, upload-time = "2026-10-14T17:06:57.819Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/4f/a9a03f6bcb6530edf47200544e6891eac9deee7ebafe5fb8c074bfaa29a6/hnap-2.0.0a0-py3-none-any.whl", hash = "sha256:79c5875afcf2acb8ba1403895c50bbad0c143f382834a1ee89a49ab122356e3a", size = 26181, upload-time = "2026-10-14T15:24:01.473Z" },
+    { url = "https://files.pythonhosted.org/packages/cf/a4/a9fc1076806e650b66a095268cf220571f6a50d8e9f2485ff5353cb94050/hnap-2.0.0rc0-py3-none-any.whl", hash = "sha256:111d1309321444d3fb9a51625edbbc0e36e0dc357437ff42f2bf3a156d3ab085", size = 26522, upload-time = "2026-10-14T17:06:56.717Z" },
 ]
 
 [[package]]

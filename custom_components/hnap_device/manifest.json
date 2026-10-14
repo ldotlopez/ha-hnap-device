@@ -10,7 +10,7 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/ldotlopez/ha-hnap-device/issues",
   "requirements": [
-    "hnap>=2.0.0rc1,<3.0.0"
+    "hnap>=2.0.0rc0,<3.0.0"
   ],
-  "version": "2.0.0"
+  "version": "2.0.1"
 }
